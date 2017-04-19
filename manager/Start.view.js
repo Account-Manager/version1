@@ -16,7 +16,7 @@
             });
 
             oPage.addHeaderContent(new sap.m.Button({
-                visible: true
+                visible: false
             }));
 
             return oPage;
