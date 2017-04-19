@@ -9,7 +9,7 @@
 			console.log("View called!");
 
             const oPage = new sap.m.Page(this.createId("page"), {
-                title: "Account Manager",
+                title: "Account Manager Test",
                 content: [
                     // oView.oFlexBoxLayout
                 ]
