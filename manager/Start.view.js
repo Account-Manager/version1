@@ -41,17 +41,71 @@
 
 
 
-            // ********** dialogs **********
+            // ********** add dialog **********
 
 
 			const oTextAreaComment = new sap.m.TextArea({
                 value: "Test data",
-                height: "100px"
+                // height: "100px"
             });
 
-			const oAddDialog = sap.m.Dialog({
+            const oCategoryComboBox = new sap.m.ComboBox({
+                items: [
+                    new sap.ui.core.Item({
+                        key: "general",
+                        text: "General"
+                    }),
+                    new sap.ui.core.Item({
+                        key: "food",
+                        text: "Food"
+                    }),
+                    new sap.ui.core.Item({
+                        key: "week",
+                        text: "Week"
+                    }),
+                    new sap.ui.core.Item({
+                        key: "category",
+                        text: "Category"
+                    })
+                ],
+                selectedKey: "general"
+            });
+
+            const oCategoryFlexBox = new sap.m.FlexBox({
+                alignItems: sap.m.FlexAlignItems.Center,
+                items: [
+                    new sap.m.Label({ text: "Category" }),  //TODO add paddingRight
+                    oCategoryComboBox
+                ]
+            });
+
+            const oValueFlexBox = new sap.m.FlexBox({
+                alignItems: sap.m.FlexAlignItems.Center,
+                items: [
+                    new sap.m.Label({ text: "Value" }),     //TODO add paddingRight
+                    new sap.m.Input({ width: "5rem" })         //TODO numbers only & auto format
+                ]
+            });
+
+            const oBookingDatePicker = new sap.m.DatePicker({
+
+            });
+
+            const oDateFlexBox = new sap.m.FlexBox({
+                alignItems: sap.m.FlexAlignItems.Center,
+                items: [
+                    new sap.m.Label({ text: "Date" }),     //TODO add paddingRight
+                    oBookingDatePicker
+                ]
+            });
+
+
+            const oAddDialog = new sap.m.Dialog({
                 title: "Add a booking",
                 content: [
+                    oCategoryFlexBox,
+                    oDateFlexBox,
+                    oValueFlexBox,
                     oTextAreaComment
                 ],
                 endButton: btnCancel
@@ -119,6 +173,11 @@
                     new sap.m.Column({
                         header: new sap.m.Label({
                             text: "Account name"
+                        })
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({
+                            text: "Value"
                         })
                     })
                 ],

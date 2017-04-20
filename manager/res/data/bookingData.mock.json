@@ -6,5 +6,13 @@
     "category": "car",
     "description": "Tankstelle",
     "value": "50€"
+  },
+  {
+    "date": "2017.04.10",
+    "bookingType": "income",
+    "frequency": "unique",
+    "category": "food",
+    "description": "Kaugummi",
+    "value": "1€"
   }
 ]
