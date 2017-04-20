@@ -7,10 +7,9 @@
             const oController = this;
 
 			let oBookingTableModel = sap.ui.model.json.JSONModel();
-			oView.oBookingTable.setModel(oBookingTableModel);
-
             const oBookingTableData = oController.loadData("bookingData.mock");
-            oView.oBookingTable.getModel().setData(oBookingTableData);
+			oBookingTableModel.setData(oBookingTableData)
+			oView.oBookingTable.setModel(oBookingTableModel);
 		},
 		
 		onBeforeRendering: function() { // default OpenUI5 function
@@ -33,46 +32,65 @@
 			})
 		},
 
+		handleDeleteTableItem: function() {
+		    const oController = this;
+		    const oView = oController.getView();
+            const oItem = viewUtils.getSelectedItemFromTable(oView.oBookingTable);
+        },
+
 		getBookingTableColumns: function() {
 			const aColumns = [
                 new sap.m.Column({
-                    key: "date",
                     header: new sap.m.Label({
                         text: "Date"
                     }),
                 }),
                 new sap.m.Column({
-					key: "bookingType",
                     header: new sap.m.Label({
                         text: "Booking type"
                     })
                 }),
                 new sap.m.Column({
-                    key: "frequency",
                     header: new sap.m.Label({
                         text: "Frequency"
                     })
                 }),
                 new sap.m.Column({
-                    key: "category",
                     header: new sap.m.Label({
                         text: "Category"
                     })
                 }),
                 new sap.m.Column({
-                    key: "decription",
                     header: new sap.m.Label({
                         text: "Description"
                     })
                 }),
                 new sap.m.Column({
-                    key: "value",
                     header: new sap.m.Label({
                         text: "Value"
                     })
                 })
             ];
 			return aColumns;
-		}
+		},
+
+		getBookingTableColumnKeys: function() {
+		  return ["date", "bookingType", "frequency", "category", "description", "value"]
+        },
+
+		getBookingTableTemplate: function() {
+		    let oTemplate = [];
+		    const aKeys = this.getBookingTableColumnKeys();
+		    aKeys.forEach(function (sKey) {
+                oTemplate.push(new sap.m.Text({
+                    wrapping: false,
+                    maxLines: 1,
+                    text: {
+                        path: sKey
+                    }
+                }))
+            });
+		    return oTemplate;
+        }
 	});
 })();

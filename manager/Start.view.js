@@ -16,7 +16,7 @@
 
 			const btnCancel = sap.m.Button({
                 text: "Cancel",
-                press: function(){
+                press: function() {
                     this.getParent().close();
                 }
             });
@@ -24,24 +24,29 @@
             const btnAdd = new sap.m.Button({
                 text: "add",
                 icon: "sap-icon://add",
-                press: function(){
-                    oAddDialog.open();
+                press: function() {
+                    oBookingCreateDialog.open();
                 }
             });
 
             const btnEdit = new sap.m.Button({
                 text: "edit",
+                enabled: false,
                 icon: "sap-icon://edit"
             });
 
             const btnDelete = new sap.m.Button({
                 text: "delete",
-                icon: "sap-icon://delete"
+                enabled: false,
+                icon: "sap-icon://delete",
+                press: function() {
+                    oController.handleDeleteTableItem();
+                }
             });
 
 
 
-            // ********** add dialog **********
+            // ********** booking create/edit dialog ********** //TODO edit function
 
 
 			const oTextAreaComment = new sap.m.TextArea({
@@ -100,7 +105,7 @@
             });
 
 
-            const oAddDialog = new sap.m.Dialog({
+            const oBookingCreateDialog = new sap.m.Dialog({
                 title: "Add a booking",
                 content: [
                     oCategoryFlexBox,
@@ -135,13 +140,22 @@
                         text: "Category"
                     })
                 ],
-                selectedKey: "noGrouping"
+                selectedKey: "noGrouping",
+                selectionChange: function() {
+                    const sInputValue = this._getInputValue();
+                    const oComboBox = this;
+                    this.getItems().forEach(function(item) {
+                        if(sInputValue === item.getText()) {
+                            sessionStorage.groupingKey = oComboBox.getSelectedKey()
+                        }
+                    })
+                }
             });
 
             oView.oGroupingComboBox.attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {
-                        this.setSelectedKey("noGrouping");
+                        this.setSelectedKey(sessionStorage.groupingKey)
                     }
                 }
             );
@@ -157,16 +171,26 @@
                         text: "Giro account"
                     }),
                 ],
-                selectedKey: "all"
+                selectedKey: "all",
+                selectionChange: function() {
+                    const sInputValue = this._getInputValue();
+                    const oComboBox = this;
+                    this.getItems().forEach(function(item) {
+                        if(sInputValue === item.getText()) {
+                            sessionStorage.filterAccountKey = oComboBox.getSelectedKey()
+                        }
+                    })
+                }
             });
 
             oView.oFilterAccount.attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {
-                        this.setSelectedKey("all");
-                    }
+                        this.setSelectedKey(sessionStorage.filterAccountKey);
+                    };
                 }
             );
+
 
             const oAccountDataTable = new sap.m.Table({
                 columns: [
@@ -222,9 +246,25 @@
 
 
             oView.oBookingTable = new sap.m.Table({
-                columns: oController.getBookingTableColumns()
+                columns: oController.getBookingTableColumns(),
+                mode: sap.m.ListMode.SingleSelectMaster,
+                noDataText: "empty table",
+                selectionChange: function(oControlEvent) {
+                    if(viewUtils.getSelectedItemFromTable(this)) {
+                        btnEdit.setEnabled(true);
+                        btnDelete.setEnabled(true);
+                    } else {
+                        btnEdit.setEnabled(false);
+                        btnDelete.setEnabled(false);
+                    }
+                }
             });
 
+            oView.oBookingTable.bindAggregation("items", "/", new sap.m.ColumnListItem({
+                cells: oController.getBookingTableTemplate()
+            }));
+
+            oView.oBookingTable.setSelectedItem(oView.oBookingTable.getItems()[0]);
 
 
             // ********** general **********
