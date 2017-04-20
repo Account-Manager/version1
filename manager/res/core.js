@@ -7,8 +7,10 @@
 	
 	sap.ui.getCore().attachInit(function () {
 		let oStartView = new sap.ui.jsview("manager.start");
-        window.oApp = new sap.m.App({initialPage:"start"});		//TODO check naming
-		window.oApp.addPage(oStartView);
-		window.oApp.placeAt("content");
+        const oApp = new sap.m.App({initialPage:"start"});		//TODO check naming
+		oApp.addPage(oStartView);
+		window.app = new sap.m.Shell({
+            app: oApp
+        }).placeAt("content");
 	});
 })();

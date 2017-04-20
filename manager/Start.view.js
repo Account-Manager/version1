@@ -84,6 +84,14 @@
                 selectedKey: "noGrouping"
             });
 
+            oView.oGroupingComboBox.attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey("noGrouping");
+                    }
+                }
+            );
+
             oView.oFilterAccount = new sap.m.ComboBox({
                 items: [
                     new sap.ui.core.Item({
@@ -98,6 +106,14 @@
                 selectedKey: "all"
             });
 
+            oView.oFilterAccount.attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey("all");
+                    }
+                }
+            );
+
             const oAccountDataTable = new sap.m.Table({
                 columns: [
                     new sap.m.Column({
@@ -105,16 +121,17 @@
                             text: "Account name"
                         })
                     })
-                ]
+                ],
+                width: "20rem"
             });
 
             const oAccountStats = new sap.m.Label({
-                text: "Account stats"
+                text: "Account stats",
+                width: "100%"
             });
 
             const oHeaderInfo = new sap.m.FlexBox({
                 justifyContent: sap.m.FlexJustifyContent.End,
-                width: "100%",
                 items: [
                     oAccountStats,
                     oAccountDataTable
@@ -137,9 +154,8 @@
                 content: [
                     oHeaderInfo,
                     oHeaderToolBar
-                ],
-                width: "100%"
-            });
+                ]
+            }).addStyleClass("sapUiNoContentPadding");
 
 
 
@@ -164,7 +180,6 @@
 
             const oPage = new sap.m.Page(this.createId("page"), {
                 title: "Account Manager",
-                height: "10rem",
                 content: [
                     oView.oHeaderPanel,
                     oView.oBookingTable
