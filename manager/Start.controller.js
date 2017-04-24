@@ -1,15 +1,19 @@
 (function() {
 	"use strict";
+
 	sap.ui.controller("manager.start", {
 		onInit: function() { // default OpenUI5 function
 			console.log("Controller called!");
-            const oView = this.getView();
-            const oController = this;
+			const oController = this;
+            const oView = oController.getView();
 
-			let oBookingTableModel = sap.ui.model.json.JSONModel();
-            const oBookingTableData = oController.loadData("bookingData.mock");
-			oBookingTableModel.setData(oBookingTableData)
-			oView.oBookingTable.setModel(oBookingTableModel);
+			oWebservice.getBookingExample("Loading booking data", function(oResponse) {
+				if (oResponse) {
+					let oBookingData = new sap.ui.model.json.JSONModel();
+					oBookingData.setData(oResponse);
+					oView.oBookingTable.setModel(oBookingData);
+				}
+			});
 		},
 		
 		onBeforeRendering: function() { // default OpenUI5 function
