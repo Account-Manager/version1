@@ -8,13 +8,13 @@
     };
 
     manager.util.View.prototype.getSelectedItemFromTable = function(oTable) {
-        if(oTable) {
+        if (oTable) {
             const oItem = oTable.getSelectedItem();
-            if(oItem) {
-                     const sPath = oItem.getBindingContext().getPath();
-                     const oModel = oTable.getModel();
-                     const oObject = oModel.getProperty(sPath);
-                     return oObject;
+            if (oItem) {
+                const sPath = oItem.getBindingContext().getPath();
+                const oModel = oTable.getModel();
+                const oObject = oModel.getProperty(sPath);
+                return oObject;
             }
         }
     }

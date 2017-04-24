@@ -9,10 +9,7 @@
             const oView = this;
 			console.log("View called!");
 
-
-
             // ********** buttons **********
-
 
 			const btnCancel = sap.m.Button({
                 text: "Cancel",
@@ -44,10 +41,7 @@
                 }
             });
 
-
-
-            // ********** booking create/edit dialog ********** //TODO edit function
-
+            // ********** booking create/edit dialog ********** // TODO: edit function
 
 			const oTextAreaComment = new sap.m.TextArea({
                 value: "Test data",
@@ -79,7 +73,7 @@
             const oCategoryFlexBox = new sap.m.FlexBox({
                 alignItems: sap.m.FlexAlignItems.Center,
                 items: [
-                    new sap.m.Label({ text: "Category" }),  //TODO add paddingRight
+                    new sap.m.Label({ text: "Category" }), // TODO: add paddingRight
                     oCategoryComboBox
                 ]
             });
@@ -87,8 +81,8 @@
             const oValueFlexBox = new sap.m.FlexBox({
                 alignItems: sap.m.FlexAlignItems.Center,
                 items: [
-                    new sap.m.Label({ text: "Value" }),     //TODO add paddingRight
-                    new sap.m.Input({ width: "5rem" })         //TODO numbers only & auto format
+                    new sap.m.Label({ text: "Value" }), // TODO: add paddingRight
+                    new sap.m.Input({ width: "5rem" }) // TODO: numbers only & auto format
                 ]
             });
 
@@ -99,11 +93,10 @@
             const oDateFlexBox = new sap.m.FlexBox({
                 alignItems: sap.m.FlexAlignItems.Center,
                 items: [
-                    new sap.m.Label({ text: "Date" }),     //TODO add paddingRight
+                    new sap.m.Label({ text: "Date" }), // TODO: add paddingRight
                     oBookingDatePicker
                 ]
             });
-
 
             const oBookingCreateDialog = new sap.m.Dialog({
                 title: "Add a booking",
@@ -116,10 +109,7 @@
                 endButton: btnCancel
             });
 
-
-
             // ********** header **********
-
 
             oView.oGroupingComboBox = new sap.m.ComboBox({
                 items: [
@@ -191,7 +181,6 @@
                 }
             );
 
-
             const oAccountDataTable = new sap.m.Table({
                 columns: [
                     new sap.m.Column({
@@ -240,10 +229,7 @@
                 ]
             }).addStyleClass("sapUiNoContentPadding");
 
-
-
             // ********** content **********
-
 
             oView.oBookingTable = new sap.m.Table({
                 columns: oController.getBookingTableColumns(),
@@ -266,9 +252,7 @@
 
             oView.oBookingTable.setSelectedItem(oView.oBookingTable.getItems()[0]);
 
-
             // ********** general **********
-
 
             const oFooter = new sap.m.Bar({
                 contentMiddle: [
