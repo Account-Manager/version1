@@ -9,8 +9,15 @@
 	//window.app = new account.manager.App("account.manager.app");
 
 	jQuery.sap.require("manager.util.view");
+	jQuery.sap.require("manager.util.storage");
 
 	window.viewUtils = new manager.util.View();
+	window.storage = new manager.util.Storage();
+
+	window.oBundle = jQuery.sap.resources({
+        url: "manager/res/i18n/i18n.properties",
+        locale: storage.getLanguage()
+    });
 
 	sap.ui.getCore().attachInit(function () {
 		let oStartView = new sap.ui.jsview("manager.start");
