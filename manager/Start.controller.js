@@ -27,19 +27,19 @@
 			
 		},
 
-		// loadData: function(sDataId){
-		// 	const sResourceName = "manager/res/data/" + sDataId + ".json";
-		// 	return jQuery.sap.loadResource(sResourceName, {
-		// 		dataType: "json",
-		// 		async: false
-		// 	})
-		// },
-
 		handleDeleteTableItem: function() {
 		    const oController = this;
 		    const oView = oController.getView();
             const oItem = viewUtils.getSelectedItemFromTable(oView.oBookingTable);
         },
+
+		handleEditBooking: function(oEvent) {
+			const oController = this;
+			const oView = oController.getView();
+			const oItem = viewUtils.getSelectedItemFromTable(oView.oBookingTable);
+
+			console.log(oItem);
+		},
 
 		getBookingTableColumns: function() {
 			const aColumns = [

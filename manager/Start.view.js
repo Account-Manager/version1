@@ -18,7 +18,7 @@
                 }
             });
 
-            const btnAdd = new sap.m.Button({
+            const btnBookingAdd = new sap.m.Button({
                 text: oBundle.getText("std.add"),
                 icon: "sap-icon://add",
                 press: function() {
@@ -26,13 +26,16 @@
                 }
             });
 
-            const btnEdit = new sap.m.Button({
+            const btnBookingEdit = new sap.m.Button({
                 text: oBundle.getText("std.edit"),
                 enabled: false,
-                icon: "sap-icon://edit"
+                icon: "sap-icon://edit",
+				press: function(oEvent) {
+                	oController.handleEditBooking(oEvent);
+				}
             });
 
-            const btnDelete = new sap.m.Button({
+            const btnBookingDelete = new sap.m.Button({
                 text: oBundle.getText("std.delete"),
                 enabled: false,
                 icon: "sap-icon://delete",
@@ -221,9 +224,9 @@
 
             const oHeaderToolBar = new sap.m.Bar({
                 contentLeft: [
-                    btnAdd,
-                    btnEdit,
-                    btnDelete
+                    btnBookingAdd,
+                    btnBookingEdit,
+                    btnBookingDelete
                 ],
                 contentMiddle: [
                     oView.oGroupingComboBox,
@@ -246,11 +249,11 @@
                 noDataText: "empty table",
                 selectionChange: function(oControlEvent) {
                     if(viewUtils.getSelectedItemFromTable(this)) {
-                        btnEdit.setEnabled(true);
-                        btnDelete.setEnabled(true);
+                        btnBookingEdit.setEnabled(true);
+                        btnBookingDelete.setEnabled(true);
                     } else {
-                        btnEdit.setEnabled(false);
-                        btnDelete.setEnabled(false);
+                        btnBookingEdit.setEnabled(false);
+                        btnBookingDelete.setEnabled(false);
                     }
                 }
             });
