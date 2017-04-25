@@ -7,7 +7,7 @@
 			const oController = this;
             const oView = oController.getView();
 
-			oWebservice.getBookingExample("Loading booking data", function(oResponse) {
+			oWebservice.getBookingExample("Loading booking data", function(oResponse) { // TODO: translate loading text
 				if (oResponse) {
 					let oBookingData = new sap.ui.model.json.JSONModel();
 					oBookingData.setData(oResponse);

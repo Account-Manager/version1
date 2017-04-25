@@ -11,7 +11,7 @@ sap.ui.define(["jquery.sap.global"],
         oWebservice.prototype.execute = function(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
         	const oLoadingDialog = new sap.m.BusyDialog({
 				text: sLoadingText,
-				title: "Loading..." // TODO: get Text from oBundle
+				title: oBundle.getText("std.loading") // TODO: get Text from oBundle
 			});
 
 			oOptions = oOptions || {};
@@ -58,14 +58,14 @@ sap.ui.define(["jquery.sap.global"],
 					// hide busy dialog if it's visible
 					oModel.attachRequestFailed(function() {
 						let oDialog = new sap.m.Dialog({
-							title: "Error loading Data", // TODO: get Text from oBundle
+							title: oBundle.getText("std.error.occurred"), // TODO: get Text from oBundle
 							type: "Message",
 							state: "Error",
 							content: new sap.m.Text({
-								text: "An Error occured while getting your data" // TODO: get Text from oBundle
+								text: oBundle.getText("std.error.loading") // TODO: get Text from oBundle
 							}),
 							beginButton: new sap.m.Button({
-								text: "OK", // TODO: get Text from oBundle
+								text: oBundle.getText("std.ok"), // TODO: get Text from oBundle
 								press: function() {
 									oDialog.close();
 								}
