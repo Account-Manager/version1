@@ -98,6 +98,7 @@
                 ]
             });
 
+            // TODO: replace content with Form? uses auto-align etc
             const oBookingCreateDialog = new sap.m.Dialog({
                 title: "Add a booking",
                 content: [
