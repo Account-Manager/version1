@@ -43,70 +43,78 @@
 
             // ********** booking create/edit dialog ********** // TODO: edit function
 
-			const oTextAreaComment = new sap.m.TextArea({
-                value: "Test data",
-                // height: "100px"
-            });
+			const oCategoryComboBox = new sap.m.ComboBox({
+				items: [
+					new sap.ui.core.Item({
+						key: "general",
+						text: "General" // TODO: translation
+					}),
+					new sap.ui.core.Item({
+						key: "food",
+						text: "Food" // TODO: translation
+					}),
+					new sap.ui.core.Item({
+						key: "week",
+						text: "Week" // TODO: translation
+					}),
+					new sap.ui.core.Item({
+						key: "category",
+						text: "Category" // TODO: translation
+					})
+				],
+				selectedKey: "general"
+			});
+			let oCategoryFormElement = new sap.ui.layout.form.FormElement({ // TODO: translations
+				label: "Category", // TODO: translation
+				fields: [ oCategoryComboBox ]
+			});
 
-            const oCategoryComboBox = new sap.m.ComboBox({
-                items: [
-                    new sap.ui.core.Item({
-                        key: "general",
-                        text: "General"
-                    }),
-                    new sap.ui.core.Item({
-                        key: "food",
-                        text: "Food"
-                    }),
-                    new sap.ui.core.Item({
-                        key: "week",
-                        text: "Week"
-                    }),
-                    new sap.ui.core.Item({
-                        key: "category",
-                        text: "Category"
-                    })
-                ],
-                selectedKey: "general"
-            });
+			const oBookingDatePicker = new sap.m.DatePicker({
+				// TODO: initializing etc
+			});
+			let oDateFormElement = new sap.ui.layout.form.FormElement({
+				label: "Date", // TODO: translation
+				fields: [ oBookingDatePicker ]
+			});
 
-            const oCategoryFlexBox = new sap.m.FlexBox({
-                alignItems: sap.m.FlexAlignItems.Center,
-                items: [
-                    new sap.m.Label({ text: "Category" }), // TODO: add paddingRight
-                    oCategoryComboBox
-                ]
-            });
+			const oValueInput = new sap.m.Input({
+				// TODO: initializing etc
+			});
+			let oValueFormElement = new sap.ui.layout.form.FormElement({
+				label: "Value", // TODO: translation
+				fields: [ oValueInput ]
+			});
 
-            const oValueFlexBox = new sap.m.FlexBox({
-                alignItems: sap.m.FlexAlignItems.Center,
-                items: [
-                    new sap.m.Label({ text: "Value" }), // TODO: add paddingRight
-                    new sap.m.Input({ width: "5rem" }) // TODO: numbers only & auto format
-                ]
-            });
+			const oTextArea = new sap.m.TextArea({
+				placeholder: "Description" // TODO: translation
+			});
+			let oDescriptionFormElement = new sap.ui.layout.form.FormElement({
+				fields: [ oTextArea ]
+			});
 
-            const oBookingDatePicker = new sap.m.DatePicker({
+			let oBookingFormContainer = new sap.ui.layout.form.FormContainer({
+				expanded: true,
+				formElements: [
+					oCategoryFormElement,
+					oDateFormElement,
+					oValueFormElement,
+					oDescriptionFormElement
+				]
+			});
 
-            });
-
-            const oDateFlexBox = new sap.m.FlexBox({
-                alignItems: sap.m.FlexAlignItems.Center,
-                items: [
-                    new sap.m.Label({ text: "Date" }), // TODO: add paddingRight
-                    oBookingDatePicker
-                ]
-            });
+			let oBookingForm = new sap.ui.layout.form.Form({
+				editable: true,
+				formContainers: [ oBookingFormContainer ],
+				layout: new sap.ui.layout.form.GridLayout({
+					// TODO: layout optimization
+				})
+			}).addStyleClass("marginMinus1Rem");
 
             // TODO: replace content with Form? uses auto-align etc
             const oBookingCreateDialog = new sap.m.Dialog({
-                title: "Add a booking",
-                content: [
-                    oCategoryFlexBox,
-                    oDateFlexBox,
-                    oValueFlexBox,
-                    oTextAreaComment
-                ],
+                title: "Add a booking", // TODO: translation
+                content: [ oBookingForm ],
+                contentWidth: "300px",
                 endButton: btnCancel
             });
 
