@@ -12,14 +12,14 @@
             // ********** buttons **********
 
 			const btnCancel = sap.m.Button({
-                text: "Cancel",
+                text: oBundle.getText("std.cancel"),
                 press: function() {
                     this.getParent().close();
                 }
             });
 
             const btnAdd = new sap.m.Button({
-                text: "add",
+                text: oBundle.getText("std.add"),
                 icon: "sap-icon://add",
                 press: function() {
                     oBookingCreateDialog.open();
@@ -27,13 +27,13 @@
             });
 
             const btnEdit = new sap.m.Button({
-                text: "edit",
+                text: oBundle.getText("std.edit"),
                 enabled: false,
                 icon: "sap-icon://edit"
             });
 
             const btnDelete = new sap.m.Button({
-                text: "delete",
+                text: oBundle.getText("std.delete"),
                 enabled: false,
                 icon: "sap-icon://delete",
                 press: function() {
@@ -116,11 +116,11 @@
                 items: [
                     new sap.ui.core.Item({
                         key: "noGrouping",
-                        text: "No grouping"
+                        text: oBundle.getText("grouping.noGrouping")
                     }),
                     new sap.ui.core.Item({
                         key: "date",
-                        text: "Date"
+                        text: oBundle.getText("std.date")
                     }),
                     new sap.ui.core.Item({
                         key: "week",
@@ -128,7 +128,7 @@
                     }),
                     new sap.ui.core.Item({
                         key: "category",
-                        text: "Category"
+                        text: oBundle.getText("std.category")
                     })
                 ],
                 selectedKey: "noGrouping",
@@ -186,12 +186,12 @@
                 columns: [
                     new sap.m.Column({
                         header: new sap.m.Label({
-                            text: "Account name"
+                            text: oBundle.getText("account.name")
                         })
                     }),
                     new sap.m.Column({
                         header: new sap.m.Label({
-                            text: "Value"
+                            text: oBundle.getText("std.value")
                         })
                     })
                 ],
@@ -199,7 +199,7 @@
             });
 
             const oAccountStats = new sap.m.Label({
-                text: "Account stats",
+                text: oBundle.getText("account.stats"),
                 width: "100%"
             });
 

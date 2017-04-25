@@ -46,32 +46,32 @@
 			const aColumns = [
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        text: "Date"
+                        text: oBundle.getText("std.date")
                     }),
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        text: "Booking type"
+                        text: oBundle.getText("booking.type")
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        text: "Frequency"
+                        text: oBundle.getText("booking.frequency")
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        text: "Category"
+                        text: oBundle.getText("std.category")
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        text: "Description"
+                        text: oBundle.getText("booking.description")
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        text: "Value"
+                        text: oBundle.getText("std.value")
                     })
                 })
             ];
