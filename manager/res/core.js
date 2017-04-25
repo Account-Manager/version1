@@ -20,8 +20,8 @@
     });
 
 	sap.ui.getCore().attachInit(function () {
-		let oStartView = new sap.ui.jsview("manager.start");
-        const oApp = new sap.m.App({ initialPage: "start" }); // TODO: check naming
+		let oStartView = new sap.ui.jsview("manager.Start");
+        const oApp = new sap.m.App({ initialPage: "Start" }); // TODO: check naming
 		oApp.addPage(oStartView);
 		window.app = new sap.m.Shell({
             app: oApp

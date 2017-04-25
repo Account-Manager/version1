@@ -1,8 +1,8 @@
 (function() {
 	"use strict";
-	sap.ui.jsview("manager.start", {
+	sap.ui.jsview("manager.Start", {
 		getControllerName: function() { // default OpenUI5 function
-			return "manager.start";
+			return "manager.Start";
 		},
 		
 		createContent: function(oController) { // default OpenUI5 function

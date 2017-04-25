@@ -92,6 +92,12 @@ sap.ui.define(["jquery.sap.global"],
             this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || undefined);
         };
 
+        oWebservice.prototype.getJSONFromBplaced = function(sLoadingText, fnSuccessCallback) {
+        	let sUrlPath = "http://track.bplaced.net/outputjson.php";
+
+        	this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, { bUsePost: false });
+		};
+
         return oWebservice;
     }
 );

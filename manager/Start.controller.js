@@ -1,7 +1,6 @@
 (function() {
 	"use strict";
-
-	sap.ui.controller("manager.start", {
+	sap.ui.controller("manager.Start", {
 		onInit: function() { // default OpenUI5 function
 			console.log("Controller called!");
 			const oController = this;
