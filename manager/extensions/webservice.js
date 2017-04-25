@@ -8,10 +8,13 @@ sap.ui.define(["jquery.sap.global"],
 
         };
 
-        oWebservice.prototype.execute = function(sLoadingText, sUrlPath, oOptions, fnSuccessCallback, fnErrorCallback) {
+        oWebservice.prototype.execute = function(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
             // initialize new JSON Model
             let oModel = new sap.ui.model.json.JSONModel();
             oOptions = oOptions || {};
+            oParameters = oParameters || {};
+			let bUsePost = oOptions.bUsePost || false;
+			let bAsync = oOptions.bAsnyc || true;
 
             // check parameters
             if ((sLoadingText && sLoadingText) !== "" && (sUrlPath && sUrlPath !== "")) {
@@ -31,14 +34,14 @@ sap.ui.define(["jquery.sap.global"],
                     });
                 }
 
-                oModel.loadData(sUrlPath, oOptions, true, "POST"); // TODO: add async and method variable
+                oModel.loadData(sUrlPath, oParameters, bAsync, bUsePost ? "POST" : "GET"); // TODO: add async and method variable
             }
         };
 
         oWebservice.prototype.getBookingExample = function(sLoadingText, fnSuccessCallback, fnErrorCallback) {
             let sUrlPath = "manager/res/data/bookingData.mock.json";
 
-            this.execute(sLoadingText, sUrlPath, null, fnSuccessCallback, fnErrorCallback);
+            this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || null);
         };
 
         return oWebservice;
