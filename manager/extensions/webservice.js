@@ -57,9 +57,28 @@ sap.ui.define(["jquery.sap.global"],
                 } else {
 					// hide busy dialog if it's visible
 					oModel.attachRequestFailed(function() {
+						let oDialog = new sap.m.Dialog({
+							title: "Error loading Data", // TODO: get Text from oBundle
+							type: "Message",
+							state: "Error",
+							content: new sap.m.Text({
+								text: "An Error occured while getting your data" // TODO: get Text from oBundle
+							}),
+							beginButton: new sap.m.Button({
+								text: "OK", // TODO: get Text from oBundle
+								press: function() {
+									oDialog.close();
+								}
+							}),
+							afterClose: function() {
+								oDialog.destroy();
+							}
+						});
 						if (!oOptions.bHideLoading) {
+
 							oLoadingDialog.close();
 						}
+						oDialog.open();
 					});
 				}
 
@@ -70,7 +89,7 @@ sap.ui.define(["jquery.sap.global"],
         oWebservice.prototype.getBookingExample = function(sLoadingText, fnSuccessCallback, fnErrorCallback) {
             let sUrlPath = "manager/res/data/bookingData.mock.json";
 
-            this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || null);
+            this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || undefined);
         };
 
         return oWebservice;
