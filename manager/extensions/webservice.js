@@ -9,9 +9,18 @@ sap.ui.define(["jquery.sap.global"],
         };
 
         oWebservice.prototype.execute = function(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
+        	const oLoadingDialog = new sap.m.BusyDialog({
+				text: sLoadingText,
+				title: "Loading..." // TODO: get Text from oBundle
+			});
+
+			oOptions = oOptions || {};
+			if (!oOptions.bHideLoading) {
+				oLoadingDialog.open();
+			}
+
             // initialize new JSON Model
             let oModel = new sap.ui.model.json.JSONModel();
-            oOptions = oOptions || {};
             oParameters = oParameters || {};
 			let bUsePost = oOptions.bUsePost || false;
 			let bAsync = oOptions.bAsnyc || true;
@@ -24,15 +33,35 @@ sap.ui.define(["jquery.sap.global"],
                 if (fnSuccessCallback && typeof fnSuccessCallback === "function") {
                     // add success callback if success function is passed
                     oModel.attachRequestCompleted(function() {
+						if (!oOptions.bHideLoading) {
+							oLoadingDialog.close();
+						}
                         fnSuccessCallback(this.getData());
                     });
-                }
+                } else {
+					// hide busy dialog if it's visible
+					oModel.attachRequestCompleted(function() {
+						if (!oOptions.bHideLoading) {
+							oLoadingDialog.close();
+						}
+					});
+				}
                 if (fnErrorCallback && typeof fnErrorCallback === "function") {
                     // add error callback if error function is passed
                     oModel.attachRequestFailed(function() {
+						if (!oOptions.bHideLoading) {
+							oLoadingDialog.close();
+						}
                         fnErrorCallback(); // TODO: pass oModel? oModel.getData()?
                     });
-                }
+                } else {
+					// hide busy dialog if it's visible
+					oModel.attachRequestFailed(function() {
+						if (!oOptions.bHideLoading) {
+							oLoadingDialog.close();
+						}
+					});
+				}
 
                 oModel.loadData(sUrlPath, oParameters, bAsync, bUsePost ? "POST" : "GET"); // TODO: add async and method variable
             }
