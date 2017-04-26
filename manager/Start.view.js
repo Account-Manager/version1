@@ -74,6 +74,8 @@
 
 			const oBookingDatePicker = new sap.m.DatePicker({
 				// TODO: initializing etc
+				dateValue: new Date(),
+				maxDate: new Date() // recording a booking in the future isn't possible
 			});
 			let oDateFormElement = new sap.ui.layout.form.FormElement({
 				label: "Date", // TODO: translation
