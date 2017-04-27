@@ -91,14 +91,23 @@
 		    aKeys.forEach(function (sKey) {
 		        switch (sKey) {
                     case "description" :
-                        oTemplate.push(new sap.m.InputListItem({
-                            content: new sap.m.Input({
-                                placeholder: oBundle.getText("std.description"),
-                                value: {
-                                    path: sKey,
-                                }
-                            }).addStyleClass("inputListItemNoMargin")
-                        }));
+                    	oTemplate.push(new sap.m.Input({
+							width: "100%",
+							placeholder: oBundle.getText("std.description"),
+							value: {
+								path: sKey
+							}
+						}));
+                        // oTemplate.push(new sap.m.InputListItem({
+							// width: "100%",
+                        //     content: new sap.m.Input({
+                        //         placeholder: oBundle.getText("std.description"),
+                        //         value: {
+                        //             path: sKey,
+                        //         },
+							// 	width: "100%"
+                        //     }) // .addStyleClass("inputListItemNoMargin")
+                        // }));
                         break;
                     case "value" :
                         let oCurrencyLabel = new sap.m.Label({
