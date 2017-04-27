@@ -91,53 +91,43 @@
 		    aKeys.forEach(function (sKey) {
 		        switch (sKey) {
                     case "description" :
-                    	oTemplate.push(new sap.m.Input({
-							width: "100%",
-							placeholder: oBundle.getText("std.description"),
-							value: {
-								path: sKey
-							}
-						}));
-                        // oTemplate.push(new sap.m.InputListItem({
-							// width: "100%",
-                        //     content: new sap.m.Input({
-                        //         placeholder: oBundle.getText("std.description"),
-                        //         value: {
-                        //             path: sKey,
-                        //         },
-							// 	width: "100%"
-                        //     }) // .addStyleClass("inputListItemNoMargin")
-                        // }));
+                        oTemplate.push(new sap.m.Input({
+                                placeholder: oBundle.getText("std.description"),
+                                value: {
+                                    path: sKey,
+                                }
+                            }));
                         break;
                     case "value" :
                         let oCurrencyLabel = new sap.m.Label({
                             text: "€",
                         }).addStyleClass("textSize14pt");
-                        let oInputListItem = new sap.m.InputListItem({
-                            type: sap.m.ListType.inactive,
-                            content: [
-                                new sap.m.Input({
-                                    placeholder: oBundle.getText("std.value"),
-                                    value: {
-                                        path: sKey,
-                                    },
-                                    width: "7rem"
-                                }).addStyleClass("inputListItemNoMargin"),
-                                oCurrencyLabel
-                            ],
+                        let oInput = new sap.m.Input({
+                            placeholder: oBundle.getText("std.value"),
+                            value: {
+                                path: sKey,
+                            },
+                            width: "7rem"
                         });
-                        oInputListItem.attachBrowserEvent(
+                        oInput.attachBrowserEvent(
                             "focusout",function() {
                                 let regex = /^[0-9]+$/;
-                                let input = this.getContent()[0].getValue();
+                                let input = this.getValue();
                                 if (!input.match(regex)) {      // only numeric values are allowed
-                                    this.getContent()[0].setValueState(sap.ui.core.ValueState.Error);
+                                    this.setValueState(sap.ui.core.ValueState.Error);
                                 } else {
-                                    this.getContent()[0].setValueState(sap.ui.core.ValueState.None);
+                                    this.setValueState(sap.ui.core.ValueState.None);
                                 }
                             }
                         );
-                        oTemplate.push(oInputListItem);
+                        let oFlexBox = new sap.m.FlexBox({
+                            items: [
+                                oInput,
+                                oCurrencyLabel.addStyleClass("marginLeft1rem")
+                            ],
+                            alignItems: sap.m.FlexAlignItems.Center
+                        }).addStyleClass("sapUiNoContentPadding");
+                        oTemplate.push(oFlexBox);
                         break;
                     default:
                         oTemplate.push(new sap.m.Text({

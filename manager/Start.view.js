@@ -258,7 +258,8 @@
             });
 
             oView.oBookingTable.bindAggregation("items", "/", new sap.m.ColumnListItem({
-                cells: oController.getBookingTableTemplate()
+                cells: oController.getBookingTableTemplate(),
+                vAlign: sap.ui.core.VerticalAlign.Middle
             }));
 
             oView.oBookingTable.setSelectedItem(oView.oBookingTable.getItems()[0]);
