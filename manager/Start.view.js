@@ -40,7 +40,7 @@
                 enabled: false,
                 icon: "sap-icon://delete",
                 press: function() {
-                    oController.handleDeleteTableItem();
+                    oController.handleDeleteTableItem(oView.oBookingTable);
                 }
             });
 
@@ -56,19 +56,12 @@
 						key: "food",
 						text: "Food" // TODO: translation
 					}),
-					new sap.ui.core.Item({
-						key: "week",
-						text: "Week" // TODO: translation
-					}),
-					new sap.ui.core.Item({
-						key: "category",
-						text: "Category" // TODO: translation
-					})
+                    //TODO add-category function
 				],
 				selectedKey: "general"
 			});
-			let oCategoryFormElement = new sap.ui.layout.form.FormElement({ // TODO: translations
-				label: "Category", // TODO: translation
+			let oCategoryFormElement = new sap.ui.layout.form.FormElement({
+				label: oBundle.getText("std.category"),
 				fields: [ oCategoryComboBox ]
 			});
 
@@ -78,7 +71,7 @@
 				maxDate: new Date() // recording a booking in the future isn't possible
 			});
 			let oDateFormElement = new sap.ui.layout.form.FormElement({
-				label: "Date", // TODO: translation
+				label: oBundle.getText("std.date"),
 				fields: [ oBookingDatePicker ]
 			});
 
@@ -86,12 +79,15 @@
 				// TODO: initializing etc
 			});
 			let oValueFormElement = new sap.ui.layout.form.FormElement({
-				label: "Value", // TODO: translation
+				label: new sap.m.Label({
+                    text: oBundle.getText("std.value"),
+                    design: sap.m.LabelDesign.Bold,
+                }),
 				fields: [ oValueInput ]
 			});
 
 			const oTextArea = new sap.m.TextArea({
-				placeholder: "Description" // TODO: translation
+				placeholder: oBundle.getText("std.description")
 			});
 			let oDescriptionFormElement = new sap.ui.layout.form.FormElement({
 				fields: [ oTextArea ]
@@ -168,7 +164,7 @@
                 items: [
                     new sap.ui.core.Item({
                         key: "all",
-                        text: "All"
+                        text: oBundle.getText("filter.account.all")
                     }),
                     new sap.ui.core.Item({
                         key: "giro",
@@ -196,6 +192,7 @@
             );
 
             const oAccountDataTable = new sap.m.Table({
+                noDataText: oBundle.getText("std.noData"),
                 columns: [
                     new sap.m.Column({
                         header: new sap.m.Label({
@@ -248,7 +245,7 @@
             oView.oBookingTable = new sap.m.Table({
                 columns: oController.getBookingTableColumns(),
                 mode: sap.m.ListMode.SingleSelectMaster,
-                noDataText: "empty table",
+                noDataText: oBundle.getText("std.noData"),
                 selectionChange: function(oControlEvent) {
                     if(viewUtils.getSelectedItemFromTable(this)) {
                         btnBookingEdit.setEnabled(true);
@@ -270,13 +267,13 @@
 
             const oFooter = new sap.m.Bar({
                 contentMiddle: [
-                    new sap.m.Button({ text: "Impressum" }),
+                    new sap.m.Button({ text: oBundle.getText("std.imprint") }),
                     new sap.m.Text({ text: "© 2017" })
                 ]
             });
 
             const oPage = new sap.m.Page(this.createId("page"), {
-                title: "Account Manager",
+                title: oBundle.getText("std.title"),
                 content: [
                     oView.oHeaderPanel,
                     oView.oBookingTable

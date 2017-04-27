@@ -27,10 +27,14 @@
 			
 		},
 
-		handleDeleteTableItem: function() {
+		handleDeleteTableItem: function(oTable) {
 		    const oController = this;
 		    const oView = oController.getView();
-            const oItem = viewUtils.getSelectedItemFromTable(oView.oBookingTable);
+            const oItem = viewUtils.getSelectedItemFromTable(oTable);
+            oTable.getModel().setData(undefined);
+            console.log(oTable.getModel().getData());
+
+            //TODO delete item in model (delete by id)
         },
 
 		handleEditBooking: function(oEvent) {
@@ -85,14 +89,59 @@
 		    let oTemplate = [];
 		    const aKeys = this.getBookingTableColumnKeys();
 		    aKeys.forEach(function (sKey) {
-                oTemplate.push(new sap.m.Text({
-                    wrapping: false,
-                    maxLines: 1,
-                    text: {
-                        path: sKey
-                    }
-                }))
+		        switch (sKey) {
+                    case "description" :
+                        oTemplate.push(new sap.m.InputListItem({
+                            content: new sap.m.Input({
+                                placeholder: oBundle.getText("std.description"),
+                                value: {
+                                    path: sKey,
+                                }
+                            }).addStyleClass("inputListItemNoMargin")
+                        }));
+                        break;
+                    case "value" :
+                        let oCurrencyLabel = new sap.m.Label({
+                            text: "€",
+                        }).addStyleClass("textSize14pt");
+                        let oInputListItem = new sap.m.InputListItem({
+                            type: sap.m.ListType.inactive,
+                            content: [
+                                new sap.m.Input({
+                                    placeholder: oBundle.getText("std.value"),
+                                    value: {
+                                        path: sKey,
+                                    },
+                                    width: "7rem"
+                                }).addStyleClass("inputListItemNoMargin"),
+                                oCurrencyLabel
+                            ],
+                        });
+                        oInputListItem.attachBrowserEvent(
+                            "focusout",function() {
+                                let regex = /^[0-9]+$/;
+                                let input = this.getContent()[0].getValue();
+                                if (!input.match(regex)) {      // only numeric values are allowed
+                                    this.getContent()[0].setValueState(sap.ui.core.ValueState.Error);
+                                } else {
+                                    this.getContent()[0].setValueState(sap.ui.core.ValueState.None);
+                                }
+                            }
+                        );
+                        oTemplate.push(oInputListItem);
+                        break;
+                    default:
+                        oTemplate.push(new sap.m.Text({
+                                wrapping: false,
+                                maxLines: 1,
+                                text: {
+                                    path: sKey
+                                }
+                            }))
+                        break;
+                }
             });
+
 		    return oTemplate;
         }
 	});
