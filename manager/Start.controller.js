@@ -287,6 +287,35 @@
 				visible: false,
 				press: function (oEvent) {
 					// oController.showUserAddDialog(oEvent);
+					let oItem = viewUtils.getSelectedItemFromTable(oUserTable);
+					oWebservice.deleteUser("Deleting User...", function(oResponse) {
+						if (oResponse && oResponse.bDeleteSuccess) {
+							sap.m.MessageToast.show("User deleted successfully.", {});
+							btnUserDelete.setVisible(false);
+							oController.getAdminPanelOverview(oUserTab, oAccountsTab, oBookingsTab, oUserTable);
+						}
+					}, function() {
+						let oDialog = new sap.m.Dialog({
+							title: oBundle.getText("std.error.occurred"),
+							type: "Message",
+							state: "Error",
+							content: new sap.m.Text({
+								text: "Beim Löschen der Daten ist ein Fehler aufgetreten"
+							}),
+							beginButton: new sap.m.Button({
+								text: oBundle.getText("std.ok"),
+								press: function() {
+									oDialog.close();
+								}
+							}),
+							afterClose: function() {
+								oDialog.destroy();
+							}
+						});
+						oDialog.open();
+					}, {
+						"sUserId": oItem.sUserId
+					});
 				}
 			});
 
@@ -321,6 +350,10 @@
 			}));
 			// btnUserAdd.setVisible(false);
 
+			oController.getAdminPanelOverview(oUserTab, oAccountsTab, oBookingsTab, oUserTable);
+		},
+
+		getAdminPanelOverview: function(oUserTab, oAccountsTab, oBookingsTab, oUserTable) {
 			oWebservice.getAdminPanelOverview("Loading overview data...", function(oResponse) {
 				oUserTab.setCount(oResponse.sUserCount);
 				oAccountsTab.setCount(oResponse.sAccountsCount);

@@ -166,6 +166,14 @@ sap.ui.define(["jquery.sap.global"],
 			}, oParameters);
 		};
 
+		oWebservice.prototype.deleteUser = function(sLoadingText, fnSuccessCallback, fnErrorCallback, oParameters) {
+			let sUrlPath = "http://track.bplaced.net/php/setData/deleteUser.php";
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, oParameters);
+		};
+
         return oWebservice;
     }
 );
