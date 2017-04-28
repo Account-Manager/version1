@@ -266,9 +266,25 @@
 
             // ********** general **********
 
+			let oMenuItems = new sap.ui.unified.MenuItemBase({
+
+			});
+
+			let oMenu = new sap.ui.unified.Menu({
+				items: [ oMenuItems ]
+			});
+
             const oFooter = new sap.m.Bar({
                 contentMiddle: [
-                    new sap.m.Button({ text: oBundle.getText("std.imprint") }),
+                	new sap.m.Button({
+						text: "Admin-Panel",
+						press: function(oEvent) {
+							oController.openAdminPanel(oEvent);
+						}
+					}),
+                    new sap.m.Button({
+						text: "Impressum"
+                    }),
                     new sap.m.Text({ text: "© 2017" })
                 ]
             });

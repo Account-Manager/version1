@@ -140,24 +140,30 @@ sap.ui.define(["jquery.sap.global"],
 			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
 		};
 
-		oWebservice.prototype.getJSONUserData = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/php/getData/getUserData.php";
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, { bUsePost: false });
-		};
-
-		// oWebservice.prototype.getJSONBookingData = function(sLoadingText, fnSuccessCallback) {
-		// 	let sUrlPath = "http://track.bplaced.net/php/getData/getBookingData.php";
-		//
-		// 	this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, { bUsePost: true }, {
-		// 		test: "lol"
-		// 	});
-		// };
-
 		oWebservice.prototype.getBookingData = function(sLoadingText, fnSuccessCallback) {
 			let sUrlPath = "http://track.bplaced.net/php/getData/getBookingData.php";
 
 			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
+		};
+
+		oWebservice.prototype.getAdminPanelOverview = function(sLoadingText, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/php/getData/getAdminPanelOverview.php";
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
+		};
+
+		oWebservice.prototype.getUserData = function(sLoadingText, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/php/getData/getUserData.php";
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
+		};
+
+		oWebservice.prototype.setNewUser = function(sLoadingText, fnSuccessCallback, fnErrorCallback, oParameters) {
+			let sUrlPath = "http://track.bplaced.net/php/setData/setNewUser.php";
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, oParameters);
 		};
 
         return oWebservice;
