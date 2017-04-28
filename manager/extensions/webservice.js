@@ -11,7 +11,7 @@ sap.ui.define(["jquery.sap.global"],
         oWebservice.prototype.execute = function(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
         	const oLoadingDialog = new sap.m.BusyDialog({
 				text: sLoadingText,
-				title: oBundle.getText("std.loading") // TODO: get Text from oBundle
+				title: oBundle.getText("std.loading")
 			});
 
 			oOptions = oOptions || {};
@@ -28,57 +28,99 @@ sap.ui.define(["jquery.sap.global"],
             // check parameters
             if ((sLoadingText && sLoadingText) !== "" && (sUrlPath && sUrlPath !== "")) {
                 // loading text AND urlpath must be typeof string and not empty
-                // TODO: Add loading message
-
-                if (fnSuccessCallback && typeof fnSuccessCallback === "function") {
-                    // add success callback if success function is passed
-                    oModel.attachRequestCompleted(function() {
-						if (!oOptions.bHideLoading) {
-							oLoadingDialog.close();
-						}
-                        fnSuccessCallback(this.getData());
-                    });
-                } else {
-					// hide busy dialog if it's visible
-					oModel.attachRequestCompleted(function() {
-						if (!oOptions.bHideLoading) {
-							oLoadingDialog.close();
-						}
-					});
-				}
-                if (fnErrorCallback && typeof fnErrorCallback === "function") {
-                    // add error callback if error function is passed
-                    oModel.attachRequestFailed(function() {
-						if (!oOptions.bHideLoading) {
-							oLoadingDialog.close();
-						}
-                        fnErrorCallback(); // TODO: pass oModel? oModel.getData()?
-                    });
-                } else {
-					// hide busy dialog if it's visible
-					oModel.attachRequestFailed(function() {
-						let oDialog = new sap.m.Dialog({
-							title: oBundle.getText("std.error.occurred"), // TODO: get Text from oBundle
-							type: "Message",
-							state: "Error",
-							content: new sap.m.Text({
-								text: oBundle.getText("std.error.loading") // TODO: get Text from oBundle
-							}),
-							beginButton: new sap.m.Button({
-								text: oBundle.getText("std.ok"), // TODO: get Text from oBundle
-								press: function() {
-									oDialog.close();
-								}
-							}),
-							afterClose: function() {
-								oDialog.destroy();
+				if (fnSuccessCallback && typeof fnSuccessCallback === "function") {
+					// check if error callback has been passed aswell
+					if (fnErrorCallback && typeof fnErrorCallback === "function") {
+						oModel.attachRequestCompleted(function(oEvent) {
+							// hide loading dialog
+							if (!oOptions.bHideLoading) {
+								oLoadingDialog.close();
+							}
+							if (oEvent.mParameters.success) {
+								// call success callback function
+								fnSuccessCallback(this.getData());
+							} else {
+								// call error callback function
+								fnErrorCallback();
 							}
 						});
+					} else {
+						// no error callback function defined, show standard error message
+						oModel.attachRequestCompleted(function(oEvent) {
+							// hide loading dialog
+							if (!oOptions.bHideLoading) {
+								oLoadingDialog.close();
+							}
+							if (oEvent.mParameters.success) {
+								// call success callback function
+								fnSuccessCallback(this.getData());
+							} else {
+								// show error message
+								let oDialog = new sap.m.Dialog({
+									title: oBundle.getText("std.error.occurred"),
+									type: "Message",
+									state: "Error",
+									content: new sap.m.Text({
+										text: oBundle.getText("std.error.loading")
+									}),
+									beginButton: new sap.m.Button({
+										text: oBundle.getText("std.ok"),
+										press: function() {
+											oDialog.close();
+										}
+									}),
+									afterClose: function() {
+										oDialog.destroy();
+									}
+								});
+								oDialog.open();
+							}
+						});
+					}
+				} else if (fnErrorCallback && typeof fnErrorCallback === "function") {
+					// only error callback supplied
+					oModel.attachRequestCompleted(function(oEvent) {
+						// hide loading dialog
 						if (!oOptions.bHideLoading) {
-
 							oLoadingDialog.close();
 						}
-						oDialog.open();
+						if (!oEvent.mParameters.success) {
+							// call error callback function
+							fnErrorCallback();
+						}
+					});
+				} else {
+					// no success and error callback functions supplied
+					oModel.attachRequestCompleted(function(oEvent) {
+						// hide loading dialog
+						if (!oOptions.bHideLoading) {
+							oLoadingDialog.close();
+						}
+						if (!oEvent.mParameters.success) {
+							// show error message
+							let oDialog = new sap.m.Dialog({
+								title: oBundle.getText("std.error.occurred"),
+								type: "Message",
+								state: "Error",
+								content: new sap.m.Text({
+									text: oBundle.getText("std.error.loading")
+								}),
+								beginButton: new sap.m.Button({
+									text: oBundle.getText("std.ok"),
+									press: function() {
+										oDialog.close();
+									}
+								}),
+								afterClose: function() {
+									oDialog.destroy();
+								}
+							});
+							if (!oOptions.bHideLoading) {
+
+								oLoadingDialog.close();
+							}
+							oDialog.open();
+						}
 					});
 				}
 
@@ -92,10 +134,30 @@ sap.ui.define(["jquery.sap.global"],
             this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || undefined);
         };
 
-        oWebservice.prototype.getJSONFromBplaced = function(sLoadingText, fnSuccessCallback) {
-        	let sUrlPath = "http://track.bplaced.net/outputjson.php";
+		oWebservice.prototype.getJSONFromBplaced = function(sLoadingText, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/outputjson.php";
 
-        	this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, { bUsePost: false });
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
+		};
+
+		oWebservice.prototype.getJSONUserData = function(sLoadingText, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/php/getData/getUserData.php";
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, { bUsePost: false });
+		};
+
+		// oWebservice.prototype.getJSONBookingData = function(sLoadingText, fnSuccessCallback) {
+		// 	let sUrlPath = "http://track.bplaced.net/php/getData/getBookingData.php";
+		//
+		// 	this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, { bUsePost: true }, {
+		// 		test: "lol"
+		// 	});
+		// };
+
+		oWebservice.prototype.getBookingData = function(sLoadingText, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/php/getData/getBookingData.php";
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
 		};
 
         return oWebservice;
