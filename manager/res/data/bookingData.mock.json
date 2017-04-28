@@ -1,18 +1,18 @@
 [
   {
     "date": "2017.04.20",
-    "bookingType": "income",
-    "frequency": "periodic",
-    "category": "car",
+    "bookingType": "Income",
+    "frequency": "Periodic",
+    "category": "Car",
     "description": "Tankstelle",
-    "value": "50"
+    "value": "50.00"
   },
   {
     "date": "2017.04.10",
-    "bookingType": "income",
-    "frequency": "unique",
-    "category": "food",
+    "bookingType": "Income",
+    "frequency": "Unique",
+    "category": "Food",
     "description": "Kaugummi",
-    "value": "1"
+    "value": "1.00"
   }
 ]

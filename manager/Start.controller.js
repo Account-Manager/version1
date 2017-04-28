@@ -99,35 +99,29 @@
                             }));
                         break;
                     case "value" :
-                        let oCurrencyLabel = new sap.m.Label({
-                            text: "€",
-                        }).addStyleClass("textSize14pt");
                         let oInput = new sap.m.Input({
                             placeholder: oBundle.getText("std.value"),
+                            textAlign: sap.ui.core.TextAlign.End,
+                            description: "€",
+                            width: "15rem",
+                            type: sap.m.InputType.Number,
                             value: {
-                                path: sKey,
-                            },
-                            width: "7rem"
+                                path: sKey
+                            }
                         });
                         oInput.attachBrowserEvent(
                             "focusout",function() {
-                                let regex = /^[0-9]+$/;
-                                let input = this.getValue();
-                                if (!input.match(regex)) {      // only numeric values are allowed
+                                let sInput = this.getValue();
+                                if(sInput === "") {
                                     this.setValueState(sap.ui.core.ValueState.Error);
                                 } else {
                                     this.setValueState(sap.ui.core.ValueState.None);
+                                    let sFloat = parseFloat(sInput).toFixed(2);
+                                    this.setValue(sFloat);
                                 }
                             }
                         );
-                        let oFlexBox = new sap.m.FlexBox({
-                            items: [
-                                oInput,
-                                oCurrencyLabel.addStyleClass("marginLeft1rem")
-                            ],
-                            alignItems: sap.m.FlexAlignItems.Center
-                        }).addStyleClass("sapUiNoContentPadding");
-                        oTemplate.push(oFlexBox);
+                        oTemplate.push(oInput);
                         break;
                     default:
                         oTemplate.push(new sap.m.Text({
