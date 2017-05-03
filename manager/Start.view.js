@@ -279,7 +279,8 @@
                 	new sap.m.Button({
 						text: "Admin-Panel",
 						press: function(oEvent) {
-							oController.openAdminPanel(oEvent);
+							oView.oAdminPanel.open();
+							oController.getAdminPanelOverview();
 						}
 					}),
                     new sap.m.Button({

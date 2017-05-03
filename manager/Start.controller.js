@@ -13,6 +13,8 @@
 					oView.oBookingTable.setModel(oBookingData);
 				}
 			});
+
+			oView.oAdminPanel = oController.makeAdminPanel();
 		},
 		
 		onBeforeRendering: function() { // default OpenUI5 function
@@ -140,11 +142,21 @@
 		    return oTemplate;
         },
 
-		openAdminPanel: function(oEvent) {
+		makeAdminPanel: function() {
 			const oController = this;
 			const oView = oController.getView();
 
-			let oUserTable = new sap.m.Table({
+			let oAdminPanel = new sap.m.Dialog({
+				title: "Admin-Panel",
+				contentWidth: "90%",
+				contentHeight: "90%",
+				showHeader: false,
+				resizable: true,
+				draggable: true,
+				stretch: !!sap.ui.Device.system.phone
+			});
+
+			oView.oUserTable = new sap.m.Table({
 				columns: [
 					new sap.m.Column({
 						header: new sap.m.Label({
@@ -169,25 +181,13 @@
 				],
 				mode: sap.m.ListMode.SingleSelectMaster,
 				selectionChange: function(oEvent) {
-					console.log(oUserTable.indexOfItem(oUserTable.getSelectedItem()));
-					let oItem = oUserTable.getSelectedItem();
+					console.log(oView.oUserTable.indexOfItem(oView.oUserTable.getSelectedItem()));
+					let oItem = oView.oUserTable.getSelectedItem();
 					if (oItem) {
-						btnUserDelete.setVisible(true);
+						oView.btnUserDelete.setVisible(true);
 					}
 				}
-				// selectionChange: function(oControlEvent) {
-				// 	if(viewUtils.getSelectedItemFromTable(this)) {
-				// 		btnBookingEdit.setEnabled(true);
-				// 		btnBookingDelete.setEnabled(true);
-				// 	} else {
-				// 		btnBookingEdit.setEnabled(false);
-				// 		btnBookingDelete.setEnabled(false);
-				// 	}
-				// }
-			});
-			// keys: [ sUserId, sFirstName, sLastName, sLoginName ]
-
-			oUserTable.bindAggregation("items", "/", new sap.m.ColumnListItem({
+			}).bindAggregation("items", "/", new sap.m.ColumnListItem({
 				cells: [
 					new sap.m.Text({
 						text: {
@@ -213,67 +213,51 @@
 				vAlign: sap.ui.core.VerticalAlign.Middle
 			}));
 
-			let oUserTab = new sap.m.IconTabFilter({
+			oView.oUserTab = new sap.m.IconTabFilter({
 				icon: "sap-icon://employee",
 				key: "user",
 				content: [
-					oUserTable
+					oView.oUserTable
 				]
 			});
-
-			let oAccountsTab = new sap.m.IconTabFilter({
+			oView.oAccountsTab = new sap.m.IconTabFilter({
 				icon: "sap-icon://contacts",
 				key: "accounts"
 			});
-
-			let oBookingsTab = new sap.m.IconTabFilter({
+			oView.oBookingsTab = new sap.m.IconTabFilter({
 				icon: "sap-icon://bar-code",
 				key: "bookings"
 			});
-
-			let oIconTabBar = new sap.m.IconTabBar({
+			oView.oIconTabBar = new sap.m.IconTabBar({
 				width: "100%",
 				items: [
-					oUserTab,
-					oAccountsTab,
-					oBookingsTab
+					oView.oUserTab,
+					oView.oAccountsTab,
+					oView.oBookingsTab
 				]
-			});
-
-			oIconTabBar.attachSelect(function(oEvent) {
+			}).attachSelect(function(oEvent) {
 				let sKey = oEvent.getParameters().key;
-				btnUserAdd.setVisible(false);
-				btnUserDelete.setVisible(false);
-				btnAccountAdd.setVisible(false);
-				btnBookingAdd.setVisible(false);
+				oView.oUserTable.removeSelections();
+				oView.btnUserAdd.setVisible(false);
+				oView.btnUserDelete.setVisible(false);
+				oView.btnAccountAdd.setVisible(false);
+				oView.btnBookingAdd.setVisible(false);
 				switch (sKey) {
 					case "user":
-						btnUserAdd.setVisible(true);
+						oView.btnUserAdd.setVisible(true);
 						break;
 					case "accounts":
-						btnAccountAdd.setVisible(true);
+						oView.btnAccountAdd.setVisible(true);
 						break;
 					case "bookings":
-						btnBookingAdd.setVisible(true);
+						oView.btnBookingAdd.setVisible(true);
 						break;
 					default:
 						break;
 				}
 			});
 
-			oView.oAdminPopup = new sap.m.Dialog({
-				title: "Admin-Panel",
-				contentWidth: "90%",
-				contentHeight: "90%",
-				showHeader: false,
-				resizable: true,
-				draggable: true,
-				stretch: !!sap.ui.Device.system.phone,
-				content: [ oIconTabBar ]
-			});
-			oView.oAdminPopup.open();
-
-			let btnUserAdd = new sap.m.Button({
+			oView.btnUserAdd = new sap.m.Button({
 				icon: "sap-icon://add",
 				text: "Add User",
 				visible: true,
@@ -281,18 +265,18 @@
 					oController.showUserAddDialog(oEvent);
 				}
 			});
-			let btnUserDelete = new sap.m.Button({
+			oView.btnUserDelete = new sap.m.Button({
 				icon: "sap-icon://decline",
 				text: "Delete User",
 				visible: false,
 				press: function (oEvent) {
 					// oController.showUserAddDialog(oEvent);
-					let oItem = viewUtils.getSelectedItemFromTable(oUserTable);
+					let oItem = viewUtils.getSelectedItemFromTable(oView.oUserTable);
 					oWebservice.deleteUser("Deleting User...", function(oResponse) {
 						if (oResponse && oResponse.bDeleteSuccess) {
 							sap.m.MessageToast.show("User deleted successfully.", {});
-							btnUserDelete.setVisible(false);
-							oController.getAdminPanelOverview(oUserTab, oAccountsTab, oBookingsTab, oUserTable);
+							oView.btnUserDelete.setVisible(false);
+							oController.getAdminPanelOverview();
 						}
 					}, function() {
 						let oDialog = new sap.m.Dialog({
@@ -318,8 +302,7 @@
 					});
 				}
 			});
-
-			let btnAccountAdd = new sap.m.Button({
+			oView.btnAccountAdd = new sap.m.Button({
 				icon: "sap-icon://add",
 				text: "Add Account",
 				visible: false,
@@ -327,41 +310,47 @@
 
 				}
 			});
-
-			let btnBookingAdd = new sap.m.Button({
+			oView.btnBookingAdd = new sap.m.Button({
 				icon: "sap-icon://add",
 				text: "Add Booking",
 				visible: false,
 				press: function (oEvent) {
-
+					let oStartDate = new Date("2016", "01", "01"), oEndDate = new Date();
+					let sStartDate = oStartDate.toJSON(), sEndDate = oEndDate.toJSON();
+					oWebservice.getBookings("Loading Bookings...", function(oResponse) {
+						console.log(oResponse);
+					}, sStartDate, sEndDate);
 				}
 			});
-
-			oView.oAdminPopup.addButton(btnUserAdd);
-			oView.oAdminPopup.addButton(btnUserDelete);
-			oView.oAdminPopup.addButton(btnAccountAdd);
-			oView.oAdminPopup.addButton(btnBookingAdd);
-			oView.oAdminPopup.addButton(new sap.m.Button({
+			oAdminPanel.addButton(oView.btnUserAdd);
+			oAdminPanel.addButton(oView.btnUserDelete);
+			oAdminPanel.addButton(oView.btnAccountAdd);
+			oAdminPanel.addButton(oView.btnBookingAdd);
+			oAdminPanel.addButton(new sap.m.Button({
 				text: "Close",
 				icon: "sap-icon://sys-cancel-2",
 				press: function(oEvent) {
-					oView.oAdminPopup.close();
+					oView.oAdminPanel.close();
 				}
 			}));
-			// btnUserAdd.setVisible(false);
 
-			oController.getAdminPanelOverview(oUserTab, oAccountsTab, oBookingsTab, oUserTable);
+			oAdminPanel.addContent(oView.oIconTabBar);
+
+			return oAdminPanel;
 		},
 
-		getAdminPanelOverview: function(oUserTab, oAccountsTab, oBookingsTab, oUserTable) {
+		getAdminPanelOverview: function() {
+			const oContoller = this;
+			const oView = oContoller.getView();
+
 			oWebservice.getAdminPanelOverview("Loading overview data...", function(oResponse) {
-				oUserTab.setCount(oResponse.sUserCount);
-				oAccountsTab.setCount(oResponse.sAccountsCount);
-				oBookingsTab.setCount(oResponse.sBookingsCount);
+				oView.oUserTab.setCount(oResponse.sUserCount);
+				oView.oAccountsTab.setCount(oResponse.sAccountsCount);
+				oView.oBookingsTab.setCount(oResponse.sBookingsCount);
 				oWebservice.getUserData("Loading User informations...", function(oUserResponse) {
 					let oUserModel = new sap.ui.model.json.JSONModel();
 					oUserModel.setData(oUserResponse);
-					oUserTable.setModel(oUserModel);
+					oView.oUserTable.setModel(oUserModel);
 				});
 			});
 		},
@@ -447,6 +436,7 @@
 									sap.m.MessageToast.show("User saved successfully.", {});
 									oUserAddDialog.close();
 									// TODO: refresh
+									oController.getAdminPanelOverview();
 								}
 							}, function() {
 								let oDialog = new sap.m.Dialog({

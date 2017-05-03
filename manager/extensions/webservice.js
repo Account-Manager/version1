@@ -134,18 +134,6 @@ sap.ui.define(["jquery.sap.global"],
             this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || undefined);
         };
 
-		oWebservice.prototype.getJSONFromBplaced = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/outputjson.php";
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
-		};
-
-		oWebservice.prototype.getBookingData = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/php/getData/getBookingData.php";
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
-		};
-
 		oWebservice.prototype.getAdminPanelOverview = function(sLoadingText, fnSuccessCallback) {
 			let sUrlPath = "http://track.bplaced.net/php/getData/getAdminPanelOverview.php";
 
@@ -172,6 +160,18 @@ sap.ui.define(["jquery.sap.global"],
 			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
 				bUsePost: true
 			}, oParameters);
+		};
+
+		oWebservice.prototype.fuckedUp = function(sLoadingText, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/api/get.php?sFunctionName=getBookings";
+			sUrlPath = encodeURI(sUrlPath);
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, {
+				"sStartDate": "2017-01-01 00:00:00",
+				"sEndDate": "2017-05-03 00:00:00"
+			});
 		};
 
         return oWebservice;

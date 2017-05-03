@@ -19,4 +19,10 @@
         }
     }
 
+    manager.util.View.prototype.formatDateToBackendString = function(oDate) {
+        if (oDate && typeof oDate === "object") {
+            let oDateFormatter = new sap.ui.core.format.DateFormat();
+            oDateFormatter.format(oDate);
+        }
+    }
 })();
