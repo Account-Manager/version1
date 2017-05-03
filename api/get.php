@@ -51,7 +51,8 @@
             $oDatabase = new PDO('mysql:host=localhost;dbname=track_ui5', 'track_ui5', 'openui5database');
 
             $sQuery = "SELECT " .
-                      "book_id AS sBookingId, book_cat AS iBookingCategory, book_date AS oBookingDate, book_freq AS iBookingFrequency, book_title AS sBookingTitle, book_value AS fBookingValue " .
+                      "book_id AS sBookingId, book_cat AS iBookingCategory, book_date AS oBookingDate, book_freq AS iBookingFrequency, book_title AS sBookingTitle, book_value AS fBookingValue, " .
+                      "acc_id AS sAccountId, book_type AS iBookingType " .
                       "FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate";
             $oStatement = $oDatabase->prepare($sQuery); // "SELECT * FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate");
             $oStatement->bindParam(":sStartDate", $sStartDate);

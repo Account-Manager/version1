@@ -6,10 +6,25 @@
 			const oController = this;
             const oView = oController.getView();
 
-			oWebservice.getBookingExample("Loading booking data", function(oResponse) { // TODO: translate loading text
-				if (oResponse) {
+			// oWebservice.getBookingExample("Loading booking data", function(oResponse) { // TODO: translate loading text
+			// 	if (oResponse && !oResponse.bError) {
+			// 		let oBookings = oResponse.aBookings;
+			// 		let oBookingData = new sap.ui.model.json.JSONModel();
+			// 		oBookingData.setData(oBookings);
+			// 		oView.oBookingTable.setModel(oBookingData);
+			// 	}
+			// });
+			let oDate = new Date();
+			let oStartDate = new Date(oDate.getFullYear(), oDate.getMonth(), 1);
+			let oEndDate = new Date(oDate.getFullYear(), oDate.getMonth() + 1, 0);
+			let sStartDate = viewUtils.formatDateToBackendString(oStartDate);
+			let sEndDate = viewUtils.formatDateToBackendString(oEndDate);
+			oWebservice.getBookings("Loading booking data", sStartDate, sEndDate, function(oResponse) { // TODO: translate loading text
+				console.log(oResponse);
+				if (oResponse && !oResponse.bError) {
+					let oBookings = oResponse.aBookings;
 					let oBookingData = new sap.ui.model.json.JSONModel();
-					oBookingData.setData(oResponse);
+					oBookingData.setData(oBookings);
 					oView.oBookingTable.setModel(oBookingData);
 				}
 			});
@@ -84,7 +99,15 @@
 		},
 
 		getBookingTableColumnKeys: function() {
-		  return ["date", "bookingType", "frequency", "category", "description", "value"]
+			return [
+				"oBookingDate",
+				"iBookingType",
+				"iBookingFrequency",
+				"iBookingCategory",
+				"sBookingTitle",
+				"fBookingValue"
+			];
+		  // return ["date", "bookingType", "frequency", "category", "description", "value"]
         },
 
 		getBookingTableTemplate: function() {
@@ -92,7 +115,7 @@
 		    const aKeys = this.getBookingTableColumnKeys();
 		    aKeys.forEach(function (sKey) {
 		        switch (sKey) {
-                    case "description" :
+					case "sBookingTitle": // "description" :
                         oTemplate.push(new sap.m.Input({
                                 placeholder: oBundle.getText("std.description"),
                                 value: {
@@ -101,7 +124,7 @@
                             })
 						);
                         break;
-                    case "value" :
+					case "fBookingValue": // "value" :
                         let oInput = new sap.m.Input({
                             placeholder: oBundle.getText("std.value"),
                             textAlign: sap.ui.core.TextAlign.End,

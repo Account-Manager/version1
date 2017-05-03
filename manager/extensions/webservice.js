@@ -174,6 +174,18 @@ sap.ui.define(["jquery.sap.global"],
 			});
 		};
 
+		oWebservice.prototype.getBookings = function(sLoadingText, sStartDate, sEndDate, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/api/get.php?sFunctionName=getBookings";
+			sUrlPath = encodeURI(sUrlPath);
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, {
+				"sStartDate": sStartDate,
+				"sEndDate": sEndDate
+			});
+		};
+
         return oWebservice;
     }
 );

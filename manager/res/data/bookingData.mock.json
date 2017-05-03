@@ -1,18 +1,25 @@
-[
-  {
-    "date": "2017.04.20",
-    "bookingType": "Income",
-    "frequency": "Periodic",
-    "category": "Car",
-    "description": "Tankstelle",
-    "value": "50.00"
-  },
-  {
-    "date": "2017.04.10",
-    "bookingType": "Income",
-    "frequency": "Unique",
-    "category": "Food",
-    "description": "Kaugummi",
-    "value": "1.00"
-  }
-]
+{
+  "bError":false,
+  "aBookings":[
+    {
+      "sBookingId":"1",
+      "iBookingCategory":"1",
+      "oBookingDate":"2017-04-26 00:00:00",
+      "iBookingFrequency":"0",
+      "sBookingTitle":"Testbooking 1",
+      "fBookingValue":"51.23",
+      "sAccountId":"1",
+      "iBookingType":"1"
+    },
+    {
+      "sBookingId":"2",
+      "iBookingCategory":"1",
+      "oBookingDate":"2017-04-28 00:00:00",
+      "iBookingFrequency":"1",
+      "sBookingTitle":"Test",
+      "fBookingValue":"200.88",
+      "sAccountId":"1",
+      "iBookingType":"1"
+    }
+  ]
+}

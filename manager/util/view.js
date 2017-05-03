@@ -27,13 +27,18 @@
 	 */
 	manager.util.View.prototype.formatDateToBackendString = function(oDate) {
         if (oDate && typeof oDate === "object") {
-            let sDate = oDate.getFullYear() + "-";
-            let sMonth = oDate.getMonth() + 1;
+        	let sYear = oDate.getFullYear();
+        	let sMonth = oDate.getMonth() + 1;
 			sMonth = sMonth > 9 ? sMonth : "0" + sMonth;
-			let sDay = oDate.getDay();
-            sDay = sDay > 9 ? sDay : "0" + sDay;
-            sDate = sDate + sMonth + "-" + sMonth + " " + oDate.getHours() + ":" + oDate.getMinutes() + ":" + oDate.getSeconds();
-            return sDate;
+        	let sDay = oDate.getDate();
+			sDay = sDay > 9 ? sDay : "0" + sDay;
+			let sHours = oDate.getHours();
+			sHours = sHours > 9 ? sHours : "0" + sHours;
+			let sMinutes = oDate.getMinutes();
+			sMinutes = sMinutes > 9 ? sMinutes : "0" + sMinutes;
+			let sSeconds = oDate.getSeconds();
+			sSeconds = sSeconds > 9 ? sSeconds : "0" + sSeconds;
+        	return "" + sYear + "-" + sMonth + "-" + sDay +  " " + sHours + ":" + sMinutes + ":" + sSeconds;
         }
     }
 })();
