@@ -19,10 +19,21 @@
         }
     }
 
-    manager.util.View.prototype.formatDateToBackendString = function(oDate) {
+	/**
+	 * formats JS Date Object to string
+	 *
+	 * @param oDate
+	 * @returns {string} {format: YYYY-MM-DD HH:mm:SS}
+	 */
+	manager.util.View.prototype.formatDateToBackendString = function(oDate) {
         if (oDate && typeof oDate === "object") {
-            let oDateFormatter = new sap.ui.core.format.DateFormat();
-            oDateFormatter.format(oDate);
+            let sDate = oDate.getFullYear() + "-";
+            let sMonth = oDate.getMonth() + 1;
+			sMonth = sMonth > 9 ? sMonth : "0" + sMonth;
+			let sDay = oDate.getDay();
+            sDay = sDay > 9 ? sDay : "0" + sDay;
+            sDate = sDate + sMonth + "-" + sMonth + " " + oDate.getHours() + ":" + oDate.getMinutes() + ":" + oDate.getSeconds();
+            return sDate;
         }
     }
 })();
