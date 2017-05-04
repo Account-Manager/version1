@@ -20,7 +20,6 @@
 			let sStartDate = viewUtils.formatDateToBackendString(oStartDate);
 			let sEndDate = viewUtils.formatDateToBackendString(oEndDate);
 			oWebservice.getBookings("Loading booking data", sStartDate, sEndDate, function(oResponse) { // TODO: translate loading text
-				console.log(oResponse);
 				if (oResponse && !oResponse.bError) {
 					let oBookings = oResponse.aBookings;
 					let oBookingData = new sap.ui.model.json.JSONModel();

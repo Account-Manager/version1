@@ -7,7 +7,12 @@
 
     };
 
-    manager.util.View.prototype.getSelectedItemFromTable = function(oTable) {
+	/**
+	 * returns the object from the binded model of the item selected in a table
+	 * @param oTable
+	 * @returns (object)
+	 */
+	manager.util.View.prototype.getSelectedItemFromTable = function(oTable) {
         if (oTable) {
             const oItem = oTable.getSelectedItem();
             if (oItem) {
@@ -17,11 +22,10 @@
                 return oObject;
             }
         }
-    }
+    };
 
 	/**
 	 * formats JS Date Object to string
-	 *
 	 * @param oDate
 	 * @returns {string} {format: YYYY-MM-DD HH:mm:SS}
 	 */
@@ -40,5 +44,16 @@
 			sSeconds = sSeconds > 9 ? sSeconds : "0" + sSeconds;
         	return "" + sYear + "-" + sMonth + "-" + sDay +  " " + sHours + ":" + sMinutes + ":" + sSeconds;
         }
-    }
+    };
+
+	/**
+	 * creates a JS Date Object from a date string
+	 * @param sBackendString (format: YYYY-MM-DD HH:mm:SS)
+	 * @returns {Date}
+	 */
+    manager.util.View.prototype.makeDateFromBackendString = function(sBackendString) {
+		if (sBackendString && typeof sBackendString === "string" && sBackendString.length === 19) {
+			return new Date(sBackendString.substring(0, 4), sBackendString.substring(5, 7) - 1, sBackendString.substring(8, 10), sBackendString.substring(11, 13), sBackendString.substring(14, 16), sBackendString.substring(17));
+		}
+	};
 })();

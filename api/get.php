@@ -18,6 +18,7 @@
     if ($bFunctionNameSet && $sFunctionName !== "") {
         if (is_callable($sFunctionName)) {
             // if this is executed, error handling is passed to called function
+            // ATTENTION: functions have no parameters! must be read from $_POST[]!
             call_user_func($sFunctionName);
         } else {
             $bFunctionNameSet = false;
@@ -26,7 +27,6 @@
         $bFunctionNameSet = false;
     }
     if (!$bFunctionNameSet) {
-        // TODO: return error message
         $oResponse = array(
             "bError" => true,
             "sErrorMessage" => "Function non-existent!"
@@ -36,38 +36,47 @@
     }
 
     function getUserData() {
-        // ATTENTION: functions have no parameters! have to be read from $_POST[]!
         echo "function getUserData called!";
     }
 
     function getBookings() {
         $sStartDate = "";
         $sEndDate = "";
-        $oResponse = array();
+        $oResponse = array(
+            "bError" => true
+        );
         if (isSetAndFilled($_POST["sStartDate"]) && isSetAndFilled($_POST["sEndDate"])) {
             $sStartDate = $_POST["sStartDate"];
             $sEndDate = $_POST["sEndDate"];
 
-            $oDatabase = new PDO('mysql:host=localhost;dbname=track_ui5', 'track_ui5', 'openui5database');
-
-            $sQuery = "SELECT " .
-                      "book_id AS sBookingId, book_cat AS iBookingCategory, book_date AS oBookingDate, book_freq AS iBookingFrequency, book_title AS sBookingTitle, book_value AS fBookingValue, " .
-                      "acc_id AS sAccountId, book_type AS iBookingType " .
-                      "FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate";
-            $oStatement = $oDatabase->prepare($sQuery); // "SELECT * FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate");
-            $oStatement->bindParam(":sStartDate", $sStartDate);
-            $oStatement->bindParam(":sEndDate", $sEndDate);
-            $oStatement->execute();
-            $aRows = array();
-            for ($i = 0; $i < $oStatement->rowCount(); $i++) {
-                array_push($aRows, $oStatement->fetch(PDO::FETCH_ASSOC));
+            try {
+                $oDatabase = new PDO('mysql:host=localhost;dbname=track_ui5', 'track_ui5', 'openui5database');
+                $sQuery = "SELECT " .
+                    "book_id AS sBookingId, book_cat AS iBookingCategory, book_date AS oBookingDate, book_freq AS iBookingFrequency, book_title AS sBookingTitle, book_value AS fBookingValue, " .
+                    "acc_id AS sAccountId, book_type AS iBookingType " .
+                    "FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate";
+                $oStatement = $oDatabase->prepare($sQuery); // "SELECT * FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate");
+                $oStatement->bindParam(":sStartDate", $sStartDate);
+                $oStatement->bindParam(":sEndDate", $sEndDate);
+                $oStatement->execute();
+                $aRows = array();
+                for ($i = 0; $i < $oStatement->rowCount(); $i++) {
+                    array_push($aRows, $oStatement->fetch(PDO::FETCH_ASSOC));
+                }
+                $oResponse["bError"]= false;
+                $oResponse["aBookings"] = $aRows;
+            } catch (PDOException $ePDO) {
+                $oResponse["sErrorMessage"] = $ePDO->getMessage();
+                $oResponse["sShortError"] = "Error on Database execution";
+            } catch (Exception $e) {
+                $oResponse["sErrorMessage"] = $e->getMessage();
+                $oResponse["sShortError"] = "Non-PDO error on Database execution";
             }
-            $oResponse["bError"]= false;
-            $oResponse["aBookings"] = $aRows;
-            echo json_encode($oResponse);
-
-            // TODO: try/catch, errorhandling
+        } else {
+            $oResponse["sErrorMessage"] = "Start and/or End Date not specified";
         }
+        echo json_encode($oResponse);
+        exit();
     }
 
     /**
