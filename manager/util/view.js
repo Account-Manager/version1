@@ -24,6 +24,48 @@
         }
     };
 
+	manager.util.View.prototype.getIndexInTableModel = function(oTable, sKey, mValue) {
+		if (oTable && sKey && mValue) {
+			const oItem = this.getSelectedItemFromTable(oTable);
+			const oModel = oTable.getModel();
+			let oData = oModel.getData();
+			let iIndexInTable = -1;
+			oData.forEach(function(oElement, iIndex) {
+				if (oElement[sKey] === mValue) {
+					iIndexInTable = iIndex;
+					return;
+				}
+			});
+			return iIndexInTable;
+		}
+	};
+
+	manager.util.View.prototype.deleteTableItemByKeyAndValue = function(oTable, sKey, mValue) {
+		if (oTable && sKey && mValue) {
+			let oTableData = oTable.getModel().getData();
+			let iIndexInTable = -1;
+			oTableData.forEach(function(oElement, iIndex) {
+				if (oElement[sKey] === mValue) {
+					iIndexInTable = iIndex;
+					return;
+				}
+			});
+			if (iIndexInTable > -1) {
+				oTableData.splice(iIndexInTable, 1);
+				let oNewData = new sap.ui.model.json.JSONModel();
+				oNewData.setData(oTableData);
+				oTable.setModel(oNewData);
+			}
+
+			// let sIndexInModel = viewUtil.getIndexInTableModel(oTable);
+			// let oTableModelData = oTable.getModel().getData();
+			// oTableModelData.splice(sIndexInModel, 1);
+			// let oNewTableData = new sap.ui.model.json.JSONModel();
+			// oNewTableData.setData(oTableModelData);
+			// oTable.setModel(oNewTableData);
+		}
+	};
+
 	/**
 	 * formats JS Date Object to string
 	 * @param oDate

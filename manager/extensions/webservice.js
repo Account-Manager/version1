@@ -135,7 +135,8 @@ sap.ui.define(["jquery.sap.global"],
         };
 
 		oWebservice.prototype.getAdminPanelOverview = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/php/getData/getAdminPanelOverview.php";
+			let sUrlPath = "http://track.bplaced.net/api/get.php?sFunctionName=adminGetOverview";
+			sUrlPath = encodeURI(sUrlPath);
 
 			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
 		};
@@ -183,6 +184,17 @@ sap.ui.define(["jquery.sap.global"],
 			}, {
 				"sStartDate": sStartDate,
 				"sEndDate": sEndDate
+			});
+		};
+
+		oWebservice.prototype.deleteBooking = function(sLoadingText, sBookingId, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/api/delete.php?sFunctionName=deleteBooking";
+			sUrlPath = encodeURI(sUrlPath);
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, {
+				"sBookingId": sBookingId
 			});
 		};
 

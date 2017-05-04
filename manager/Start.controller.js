@@ -47,8 +47,27 @@
 		    const oController = this;
 		    const oView = oController.getView();
             const oItem = viewUtils.getSelectedItemFromTable(oTable);
-            oTable.getModel().setData(undefined);
-            console.log(oTable.getModel().getData());
+            const sBookingId = oItem.sBookingId;
+
+            oWebservice.deleteBooking("Deleting Booking...", sBookingId, function(oResponse) { // TODO: translation
+				if (oResponse && !oResponse.bError) {
+					sap.m.MessageToast.show("Booking deleted successfully");
+					viewUtils.deleteTableItemByKeyAndValue(oTable, "sBookingId", sBookingId);
+					/*
+					let sIndexInModel = viewUtil.getIndexInTableModel(oTable);
+					let oTableModelData = oTable.getModel().getData();
+					oTableModelData.splice(sIndexInModel, 1);
+					let oNewTableData = new sap.ui.model.json.JSONModel();
+					oNewTableData.setData(oTableModelData);
+					oTable.setModel(oNewTableData);
+					*/
+				}
+			});
+
+            // console.log(oItem);
+
+            // oTable.getModel().setData(undefined);
+            // console.log(oTable.getModel().getData());
 
             //TODO delete item in model (delete by id)
         },
@@ -366,14 +385,16 @@
 			const oView = oContoller.getView();
 
 			oWebservice.getAdminPanelOverview("Loading overview data...", function(oResponse) {
-				oView.oUserTab.setCount(oResponse.sUserCount);
-				oView.oAccountsTab.setCount(oResponse.sAccountsCount);
-				oView.oBookingsTab.setCount(oResponse.sBookingsCount);
-				oWebservice.getUserData("Loading User informations...", function(oUserResponse) {
-					let oUserModel = new sap.ui.model.json.JSONModel();
-					oUserModel.setData(oUserResponse);
-					oView.oUserTable.setModel(oUserModel);
-				});
+				if (oResponse && !oResponse.bError) {
+					oView.oUserTab.setCount(oResponse.aCounts[0].sUserCount);
+					oView.oAccountsTab.setCount(oResponse.aCounts[0].sAccountsCount);
+					oView.oBookingsTab.setCount(oResponse.aCounts[0].sBookingsCount);
+					oWebservice.getUserData("Loading User informations...", function(oUserResponse) {
+						let oUserModel = new sap.ui.model.json.JSONModel();
+						oUserModel.setData(oUserResponse);
+						oView.oUserTable.setModel(oUserModel);
+					});
+				}
 			});
 		},
 

@@ -55,7 +55,7 @@
                     "book_id AS sBookingId, book_cat AS iBookingCategory, book_date AS oBookingDate, book_freq AS iBookingFrequency, book_title AS sBookingTitle, book_value AS fBookingValue, " .
                     "acc_id AS sAccountId, book_type AS iBookingType " .
                     "FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate";
-                $oStatement = $oDatabase->prepare($sQuery); // "SELECT * FROM am_bookings WHERE book_date BETWEEN :sStartDate AND :sEndDate");
+                $oStatement = $oDatabase->prepare($sQuery);
                 $oStatement->bindParam(":sStartDate", $sStartDate);
                 $oStatement->bindParam(":sEndDate", $sEndDate);
                 $oStatement->execute();
@@ -74,6 +74,30 @@
             }
         } else {
             $oResponse["sErrorMessage"] = "Start and/or End Date not specified";
+        }
+        echo json_encode($oResponse);
+        exit();
+    }
+
+    // getter for admin panel
+    // TODO: move to own file/api
+    function adminGetOverview() {
+        $oResponse = array(
+            "bError" => true
+        );
+        try {
+            $oDB = new PDO('mysql:host=localhost;dbname=track_ui5', 'track_ui5', 'openui5database');
+            $sQuery = "SELECT COUNT( DISTINCT am_user.id ) AS sUserCount, COUNT( DISTINCT am_accounts.acc_id ) AS sAccountsCount, COUNT( DISTINCT am_bookings.book_id ) AS sBookingsCount FROM am_user, am_accounts, am_bookings WHERE 1 = ?";
+            $oStatement = $oDB->prepare($sQuery);
+            $oStatement->execute(array(1));
+            $oResponse["aCounts"] = array($oStatement->fetch(PDO::FETCH_ASSOC));
+            $oResponse["bError"] = false;
+        } catch (PDOException $ePDO) {
+            $oResponse["sErrorMessage"] = $ePDO->getMessage();
+            $oResponse["sShortError"] = "Error on Database execution";
+        } catch (Exception $e) {
+            $oResponse["sErrorMessage"] = $e->getMessage();
+            $oResponse["sShortError"] = "Non-PDO error on Database execution";
         }
         echo json_encode($oResponse);
         exit();
