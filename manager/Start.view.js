@@ -359,6 +359,7 @@
                 title: oBundle.getText("booking.add"), // TODO: translation
                 content: [ oBookingForm ],
                 contentWidth: "30%",
+				stretch: !!sap.ui.Device.system.phone,
                 buttons: [ btnResetBooking, btnCloseBooking ]
             });
 
