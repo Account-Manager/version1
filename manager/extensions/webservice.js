@@ -187,6 +187,39 @@ sap.ui.define(["jquery.sap.global"],
 			});
 		};
 
+		oWebservice.prototype.setBooking = function(sLoadingText, sAccountId, sBookingCategory, iBookingType, sBookingDate, iBookingFrequency, sBookingTitle, fBookingValue, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/api/set.php?sFunctionName=setBooking";
+			sUrlPath = encodeURI(sUrlPath);
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, {
+				"sAccountId": sAccountId,
+				"sBookingCategory": sBookingCategory,
+				"iBookingType": iBookingType,
+				"sBookingDate": sBookingDate,
+				"iBookingFrequency": iBookingFrequency,
+				"sBookingTitle": sBookingTitle,
+				"fBookingValue": fBookingValue
+			});
+		};
+
+		oWebservice.prototype.updateBooking = function(sLoadingText, sBookingId, sBookingCategory, iBookingType, iBookingFrequency, sBookingTitle, fBookingValue, fnSuccessCallback) {
+			let sUrlPath = "http://track.bplaced.net/api/set.php?sFunctionName=updateBooking";
+			sUrlPath = encodeURI(sUrlPath);
+
+			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
+				bUsePost: true
+			}, {
+				"sBookingId": sBookingId,
+				"sBookingCategory": sBookingCategory,
+				"iBookingType": iBookingType,
+				"iBookingFrequency": iBookingFrequency,
+				"sBookingTitle": sBookingTitle,
+				"fBookingValue": fBookingValue
+			});
+		};
+
 		oWebservice.prototype.deleteBooking = function(sLoadingText, sBookingId, fnSuccessCallback) {
 			let sUrlPath = "http://track.bplaced.net/api/delete.php?sFunctionName=deleteBooking";
 			sUrlPath = encodeURI(sUrlPath);

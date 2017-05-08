@@ -53,23 +53,10 @@
 				if (oResponse && !oResponse.bError) {
 					sap.m.MessageToast.show("Booking deleted successfully");
 					viewUtils.deleteTableItemByKeyAndValue(oTable, "sBookingId", sBookingId);
-					/*
-					let sIndexInModel = viewUtil.getIndexInTableModel(oTable);
-					let oTableModelData = oTable.getModel().getData();
-					oTableModelData.splice(sIndexInModel, 1);
-					let oNewTableData = new sap.ui.model.json.JSONModel();
-					oNewTableData.setData(oTableModelData);
-					oTable.setModel(oNewTableData);
-					*/
+					oTable.removeSelections();
+					// TODO: disable edit and remove buttons
 				}
 			});
-
-            // console.log(oItem);
-
-            // oTable.getModel().setData(undefined);
-            // console.log(oTable.getModel().getData());
-
-            //TODO delete item in model (delete by id)
         },
 
 		handleEditBooking: function(oEvent) {
@@ -77,7 +64,82 @@
 			const oView = oController.getView();
 			const oItem = viewUtils.getSelectedItemFromTable(oView.oBookingTable);
 
-			console.log(oItem);
+			// TODO: rework, this is just a temporary version to test backend connection
+
+			let inpBookingType = new sap.m.Input({
+				value: oItem.iBookingType,
+				tooltip: "Buchungstyp"
+			});
+			let inpBookingFrequency = new sap.m.Input({
+				value: oItem.iBookingFrequency,
+				tooltip: "Häufigkeit"
+			});
+			let inpBookingCategory = new sap.m.Input({
+				value: oItem.iBookingCategory,
+				tooltip: "Kategorie"
+			});
+			let inpBookingTitle = new sap.m.Input({
+				value: oItem.sBookingTitle,
+				tooltip: "Beschreibung"
+			});
+			let inpBookingValue = new sap.m.Input({
+				value: oItem.fBookingValue,
+				tooltip: "Betrag"
+			});
+
+			let oEditPopup = new sap.m.Dialog({
+				title: "Edit Booking",
+				contentWidth: "20rem", // as wide as shell
+				showHeader: true,
+				resizable: false,
+				draggable: true,
+				stretch: !!sap.ui.Device.system.phone,
+				buttons: [
+					new sap.m.Button({
+						text: oBundle.getText("std.edit"),
+						icon: "sap-icon://save",
+						press: function(oEvent) {
+							// TODO: edit booking
+							let sBookingId = oItem.sBookingId;
+							let iBookingType = inpBookingType.getValue();
+							let iBookingFrequency = inpBookingFrequency.getValue();
+							let iBookingCategory = inpBookingCategory.getValue();
+							let sBookingTitle = inpBookingTitle.getValue();
+							let fBookingValue = inpBookingValue.getValue();
+							oWebservice.updateBooking("Updating Booking...", sBookingId, iBookingCategory, iBookingType, iBookingFrequency, sBookingTitle, fBookingValue, function(oResponse) {
+								console.log(oResponse);
+								if (oResponse && !oResponse.bError) {
+									sap.m.MessageToast.show("Booking updated successfully.", {});
+								}
+							});
+						}
+					}),
+					new sap.m.Button({
+						text: oBundle.getText("std.cancel"),
+						icon: "sap-icon://sys-cancel-2",
+						press: function(oEvent) {
+							oEditPopup.close();
+							oEditPopup.destroy();
+						}
+					})
+				],
+				content: [
+					new sap.m.FlexBox({
+						height: "100%",
+						width: "100%",
+						direction: sap.m.FlexDirection.Column,
+						items: [
+							inpBookingType,
+							inpBookingFrequency,
+							inpBookingCategory,
+							inpBookingTitle,
+							inpBookingValue
+						]
+					})
+				]
+			});
+
+			oEditPopup.open();
 		},
 
 		getBookingTableColumns: function() {
@@ -202,7 +264,7 @@
 
 			let oAdminPanel = new sap.m.Dialog({
 				title: "Admin-Panel",
-				contentWidth: "90%",
+				contentWidth: "1280px", // as wide as shell
 				contentHeight: "90%",
 				showHeader: false,
 				resizable: true,
@@ -284,6 +346,7 @@
 			});
 			oView.oIconTabBar = new sap.m.IconTabBar({
 				width: "100%",
+				stretchContentHeight: true,
 				items: [
 					oView.oUserTab,
 					oView.oAccountsTab,
@@ -369,11 +432,23 @@
 				text: "Add Booking",
 				visible: false,
 				press: function (oEvent) {
-					let oStartDate = new Date("2016", "01", "01"), oEndDate = new Date();
-					let sStartDate = oStartDate.toJSON(), sEndDate = oEndDate.toJSON();
-					oWebservice.getBookings("Loading Bookings...", function(oResponse) {
+					let oBookingDate = new Date();
+					let sBookingDate = viewUtils.formatDateToBackendString(oBookingDate);
+
+					oWebservice.setBooking("Generating random Booking...", 1, 1, 1, sBookingDate, 1, "Monatsgehalt", 714.12, function(oResponse) {
 						console.log(oResponse);
-					}, sStartDate, sEndDate);
+						if (oResponse && !oResponse.bError) {
+							sap.m.MessageToast.show("Booking saved successfully", {});
+						} else {
+							sap.m.MessageToast.show("Error saving booking", {});
+						}
+					});
+
+					// let oStartDate = new Date("2016", "01", "01"), oEndDate = new Date();
+					// let sStartDate = oStartDate.toJSON(), sEndDate = oEndDate.toJSON();
+					// oWebservice.getBookings("Loading Bookings...", function(oResponse) {
+					// 	console.log(oResponse);
+					// }, sStartDate, sEndDate);
 				}
 			});
 			oAdminPanel.addButton(oView.btnUserAdd);
@@ -409,6 +484,15 @@
 					});
 				}
 			});
+		},
+
+		showBookingAddDialog: function(oEvent) {
+			const oController = this;
+			const oView = oController.getView();
+
+			// let oAccountId = new sap.m.Input({ value: "1" });
+			// let oBookingCategory = new sap.m.Input({ value: "1" });
+			// let oBookingType = new
 		},
 
 		showUserAddDialog: function(oEvent) {

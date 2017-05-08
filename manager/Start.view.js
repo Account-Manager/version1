@@ -416,6 +416,7 @@
                 contentMiddle: [
                 	new sap.m.Button({
 						text: "Admin-Panel",
+						icon: "sap-icon://role",
 						press: function(oEvent) {
 							oView.oAdminPanel.open();
 							oController.getAdminPanelOverview();
