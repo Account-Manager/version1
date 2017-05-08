@@ -10,13 +10,15 @@
 
 	jQuery.sap.require("manager.util.view");
 	jQuery.sap.require("manager.util.storage");
+    jQuery.sap.require("sap.m.MessageBox");
 
 	window.viewUtils = new manager.util.View();
 	window.storage = new manager.util.Storage();
 
-	window.oBundle = jQuery.sap.resources({
+    window.oBundle = jQuery.sap.resources({
         url: "manager/res/i18n/i18n.properties",
-        locale: storage.getLanguage()
+        // locale: storage.getLanguage()
+        locale: "DE"
     });
 
 	sap.ui.getCore().attachInit(function () {

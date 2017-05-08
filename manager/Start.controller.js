@@ -5,7 +5,7 @@
 			console.log("Controller called!");
 			const oController = this;
             const oView = oController.getView();
-
+			oController.initBookingCreateDialog();
 			// oWebservice.getBookingExample("Loading booking data", function(oResponse) { // TODO: translate loading text
 			// 	if (oResponse && !oResponse.bError) {
 			// 		let oBookings = oResponse.aBookings;
@@ -147,7 +147,7 @@
                             placeholder: oBundle.getText("std.value"),
                             textAlign: sap.ui.core.TextAlign.End,
                             description: "€",
-                            width: "15rem",
+                            width: "100%",
                             type: sap.m.InputType.Number,
                             value: {
                                 path: sKey
@@ -182,6 +182,19 @@
 
 		    return oTemplate;
         },
+
+		initBookingCreateDialog: function() {
+			const oView = this.getView();
+            const aFormElements = oView.oBookingCreateDialog.getContent()[0].getFormContainers()[0].getFormElements();
+            aFormElements[0].getFields()[0].setSelectedKey("expense");
+            aFormElements[0].getFields()[1].setSelectedKey("001");
+            aFormElements[1].getFields()[0].setDateValue(new Date());
+            aFormElements[1].getFields()[1].setSelectedKey("unique");
+            aFormElements[2].getFields()[0].setSelectedKey("general");
+            aFormElements[2].getFields()[2].setValue("");
+            aFormElements[3].getFields()[0].setValue("");
+            oView.bInputAlready = false;
+		},
 
 		makeAdminPanel: function() {
 			const oController = this;
