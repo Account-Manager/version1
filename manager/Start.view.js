@@ -389,7 +389,54 @@
 
             // ********** add category dialog **********
 
-            const btnCategoryCancel = new sap.m.Button({
+            oView.oCategoryTable = new sap.m.Table({
+                noDataText: oBundle.getText("std.noData"),
+                columns: [
+                    new sap.m.Column({
+                        header: new sap.m.Label({
+                            text: oBundle.getText("booking.type")
+                        })
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({
+                            text: oBundle.getText("booking.frequency")
+                        })
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({
+                            text: oBundle.getText("category.rubric")
+                        })
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({
+                            text: oBundle.getText("category.name")
+                        })
+                    }),
+                ],
+                mode: sap.m.ListMode.SingleSelectMaster,
+                selectionChange: function(oEvent) {
+                    //TODO
+                }
+            }).addStyleClass("sapUiNoContentPadding");
+
+            const oCustomizingTabBar = new sap.m.IconTabBar({
+                width: "100%",
+                stretchContentHeight: true,
+                items: [
+                    new sap.m.IconTabFilter({
+                        icon: "sap-icon://bullet-text",
+                        text: oBundle.getText("customizing.categories"),
+                        content: [ oView.oCategoryTable ]
+                    }),
+                    new sap.m.IconTabFilter({
+                        icon: "sap-icon://cart-4",
+                        text: oBundle.getText("customizing.accounts"),
+                        content: []
+                    })
+                ]
+            })
+
+            const btnCustomzingCancel = new sap.m.Button({
                 text: oBundle.getText("std.cancel"),
                 press: function() {
                     this.getParent().close();
@@ -397,10 +444,12 @@
             });
 
             const oAddCategoryDialog = new sap.m.Dialog({
-                title: "Add a category",
-                content: [],
-                contentWidth: "300px",
-                endButton: btnCategoryCancel
+                title: oBundle.getText("customizing.title"),
+                content: [ oCustomizingTabBar ],
+                contentWidth: "30%",
+                contentHeight: "400px",
+                buttons: [ btnCustomzingCancel ],
+                stretch: !!sap.ui.Device.system.phone
             })
 
             // ********** general **********

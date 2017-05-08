@@ -199,7 +199,7 @@
                         oTemplate.push(new sap.m.Input({
                                 placeholder: oBundle.getText("std.description"),
                                 value: {
-                                    path: sKey,
+                                    path: sKey
                                 }
                             })
 						);
