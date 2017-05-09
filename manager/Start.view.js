@@ -11,102 +11,6 @@
 
             // ********** header **********
 
-            const btnBookingAdd = new sap.m.Button({
-                text: oBundle.getText("std.add"),
-                icon: "sap-icon://add",
-                press: function() {
-                    oView.oBookingCreateDialog.open();
-                }
-            });
-
-            const btnBookingEdit = new sap.m.Button({
-                text: oBundle.getText("std.edit"),
-                enabled: false,
-                icon: "sap-icon://edit",
-                press: function(oEvent) {
-                    oController.handleEditBooking(oEvent);
-                }
-            });
-
-            const btnBookingDelete = new sap.m.Button({
-                text: oBundle.getText("std.delete"),
-                enabled: false,
-                icon: "sap-icon://delete",
-                press: function() {
-                    oController.handleDeleteTableItem(oView.oBookingTable);
-                }
-            });
-
-            oView.oGroupingComboBox = new sap.m.ComboBox({
-                items: [
-                    new sap.ui.core.Item({
-                        key: "noGrouping",
-                        text: oBundle.getText("grouping.noGrouping")
-                    }),
-                    new sap.ui.core.Item({
-                        key: "date",
-                        text: oBundle.getText("std.date")
-                    }),
-                    new sap.ui.core.Item({
-                        key: "week",
-                        text: "Week"
-                    }),
-                    new sap.ui.core.Item({
-                        key: "category",
-                        text: oBundle.getText("std.category")
-                    })
-                ],
-                selectedKey: "noGrouping",
-                selectionChange: function() {
-                    const sInputValue = this._getInputValue();
-                    const oComboBox = this;
-                    this.getItems().forEach(function(item) {
-                        if(sInputValue === item.getText()) {
-                            sessionStorage.groupingKey = oComboBox.getSelectedKey()
-                        }
-                    })
-                }
-            });
-
-            oView.oGroupingComboBox.attachBrowserEvent(
-                "focusout",function() {
-                    if(this.getSelectedKey() === "") {
-                        this.setSelectedKey(sessionStorage.groupingKey)
-                    }
-                }
-            );
-
-            oView.oAccountComboBox = new sap.m.ComboBox({
-                items: [
-                    new sap.ui.core.Item({
-                        key: "all",
-                        text: oBundle.getText("account.filter.all")
-                    }),
-                    new sap.ui.core.Item({
-                        key: "giro",
-                        text: "Giro account"
-                    }),
-                ],
-                selectedKey: "all",
-                selectionChange: function() {
-                    const sInputValue = this._getInputValue();
-                    const oComboBox = this;
-                    this.getItems().forEach(function(item) {
-                        if(sInputValue === item.getText()) {
-                            sessionStorage.filterAccountKey = oComboBox.getSelectedKey()
-                        }
-                    })
-                }
-            });
-
-            oView.oAccountComboBox.attachBrowserEvent(
-                "focusout",function() {
-                    if(this.getSelectedKey() === "") {
-                        this.setSelectedKey(sessionStorage.filterAccountKey);
-                    };
-                }
-            );
-
             const oAccountDataTable = new sap.m.Table({
                 noDataText: oBundle.getText("std.noData"),
                 columns: [
@@ -137,15 +41,212 @@
                 ]
             });
 
-            const oHeaderToolBar = new sap.m.Bar({
-                contentLeft: [
+            const btnBookingAdd = new sap.m.Button({
+                text: oBundle.getText("std.add"),
+                icon: "sap-icon://add",
+                press: function() {
+                    oView.oBookingCreateDialog.open();
+                }
+            });
+
+            const btnBookingEdit = new sap.m.Button({
+                text: oBundle.getText("std.edit"),
+                enabled: false,
+                icon: "sap-icon://edit",
+                press: function(oEvent) {
+                    oController.handleEditBooking(oEvent);
+                }
+            });
+
+            const btnBookingDelete = new sap.m.Button({
+                text: oBundle.getText("std.delete"),
+                enabled: false,
+                icon: "sap-icon://delete",
+                press: function() {
+                    oController.handleDeleteTableItem(oView.oBookingTable);
+                }
+            });
+
+            oView.oBookingTypeFilter = new sap.m.ComboBox({
+                width: "10rem",
+                items: [
+                    new sap.ui.core.Item({
+                        key: "all",
+                        text: oBundle.getText("std.bookings.all")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "0",
+                        text: oBundle.getText("booking.type.expense")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "1",
+                        text: oBundle.getText("booking.type.income")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "2",
+                        text: oBundle.getText("booking.type.transfer")
+                    })
+                ],
+                selectedKey: "all",
+                selectionChange: function() {
+                    const sInputValue = this._getInputValue();
+                    const oComboBox = this;
+                    this.getItems().forEach(function(item) {
+                        if(sInputValue === item.getText()) {
+                            sessionStorage.filterBookingTypeKey = oComboBox.getSelectedKey()
+                        }
+                    });
+                    oController.handleFilterItems("iBookingType", oComboBox.getSelectedKey());
+                }
+            });
+
+            oView.oBookingTypeFilter.attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.filterBookingTypeKey)
+                    }
+                }
+            );
+
+            oView.oAccountFilter = new sap.m.ComboBox({
+                    width: "10rem",
+                items: [
+                    new sap.ui.core.Item({
+                        key: "all",
+                        text: oBundle.getText("account.filter.all")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "giro",
+                        text: "Giro account"
+                    }),
+                ],
+                selectedKey: "all",
+                selectionChange: function() {
+                    const sInputValue = this._getInputValue();
+                    const oComboBox = this;
+                    this.getItems().forEach(function(item) {
+                        if(sInputValue === item.getText()) {
+                            sessionStorage.filterAccountKey = oComboBox.getSelectedKey()
+                        }
+                    });
+                    // oController.handleFilterItems("sAccountId", oComboBox.getSelectedKey()); TODO: set up filter
+                }
+            });
+
+            oView.oAccountFilter.attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.filterAccountKey);
+                    };
+                }
+            );
+
+            oView.oFrequencyFilter = new sap.m.ComboBox({
+                width: "10rem",
+                items: [
+                    new sap.ui.core.Item({
+                        key: "all",
+                        text: oBundle.getText("booking.frequency.all")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "0",
+                        text: oBundle.getText("booking.frequency.unique")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "1",
+                        text: oBundle.getText("booking.frequency.weekly")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "2",
+                        text: oBundle.getText("booking.frequency.monthly")
+                    })
+                ],
+                selectedKey: "all",
+                selectionChange: function() {
+                    const sInputValue = this._getInputValue();
+                    const oComboBox = this;
+                    this.getItems().forEach(function(item) {
+                        if(sInputValue === item.getText()) {
+                            sessionStorage.filterFrequencyKey = oComboBox.getSelectedKey()
+                        }
+                    });
+                    oController.handleFilterItems("iBookingFrequency", oComboBox.getSelectedKey());
+                }
+            });
+
+            oView.oFrequencyFilter.attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.filterFrequencyKey);
+                    };
+                }
+            );
+
+            oView.oPeriodFilter = new sap.m.ComboBox({
+                width: "12rem",
+                items: [
+                    new sap.ui.core.Item({
+                        key: "all",
+                        text: oBundle.getText("period.all")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "currentMonth",
+                        text: oBundle.getText("period.current.month")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "lastMonth",
+                        text: oBundle.getText("period.last.month")
+                    }),
+                    new sap.ui.core.Item({
+                        key: "previousMonth",
+                        text: oBundle.getText("period.next.month")
+                    })
+                ],
+                selectedKey: "all",
+                selectionChange: function() {
+                    const sInputValue = this._getInputValue();
+                    const oComboBox = this;
+                    this.getItems().forEach(function(item) {
+                        if(sInputValue === item.getText()) {
+                            sessionStorage.filterPeriodKey = oComboBox.getSelectedKey()
+                        }
+                    });
+                    //oController.handleFilterItems("BookingPeriod", oComboBox.getSelectedKey()); TODO: custom filter which calculates the period
+                }
+            });
+
+            oView.oPeriodFilter.attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.filterPeriodKey);
+                    };
+                }
+            );
+
+            const btnResetFilters = new sap.m.Button({
+                tooltip: oBundle.getText("std.filter.reset"),
+                icon: "sap-icon://reset",
+                press: function() {
+                    oController.handleResetFilters();
+                }
+            });
+
+            const oOverflowToolbar = new sap.m.OverflowToolbar({
+                content: [
                     btnBookingAdd,
                     btnBookingEdit,
-                    btnBookingDelete
-                ],
-                contentMiddle: [
-                    oView.oGroupingComboBox,
-                    oView.oAccountComboBox
+                    btnBookingDelete,
+                    oView.oBookingTypeFilter,
+                    oView.oAccountFilter,
+                    oView.oFrequencyFilter,
+                    oView.oPeriodFilter,
+                    btnResetFilters
+                ]
+            });
+
+            const oHeaderToolBar = new sap.m.Bar({
+                contentLeft: [
+                    oOverflowToolbar
                 ]
             });
 
@@ -228,6 +329,7 @@
                 ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
+                    // oController.handleFilterItems();
                 },
                 layoutData: new sap.ui.layout.GridData({
                     span: "L4 M4 S4"

@@ -229,9 +229,19 @@
                         );
                         oTemplate.push(oInput);
                         break;
-                    default:
+                    case "iBookingType":        //TODO: add formatter which converts ints to logical strings
                         oTemplate.push(new sap.m.Text({
                                 wrapping: false,
+                                maxLines: 1,
+                                text: {
+                                    path: sKey
+                                },
+                            })
+                        );
+                        break;
+                    default:
+                        oTemplate.push(new sap.m.Text({
+                                wrapping: false,        //TODO: category => wrapping allowed
                                 maxLines: 1,
                                 text: {
                                     path: sKey
@@ -243,6 +253,27 @@
             });
 
 		    return oTemplate;
+        },
+
+		handleFilterItems: function(sPath, sValue) {
+		    const oView = this.getView();
+		    let aFilters = [];
+		    if(sValue !== "all"){
+                let oFilter =  new sap.ui.model.Filter(sPath, "EQ", sValue);
+                aFilters.push(oFilter);
+            }
+		    const oBinding = oView.oBookingTable.getBinding("items");
+		    oBinding.filter(aFilters);
+        },
+
+		handleResetFilters: function() {
+		    const oView = this.getView();
+            oView.oBookingTypeFilter.setSelectedKey("all");
+            oView.oAccountFilter.setSelectedKey("all");
+            oView.oFrequencyFilter.setSelectedKey("all");
+            oView.oPeriodFilter.setSelectedKey("all");
+            const oBinding = oView.oBookingTable.getBinding("items");
+            oBinding.filter();
         },
 
 		initBookingCreateDialog: function() {
