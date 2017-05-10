@@ -89,18 +89,10 @@
                 ],
                 selectedKey: "all",
                 selectionChange: function() {
-                    const sInputValue = this._getInputValue();
-                    const oComboBox = this;
-                    this.getItems().forEach(function(item) {
-                        if(sInputValue === item.getText()) {
-                            sessionStorage.filterBookingTypeKey = oComboBox.getSelectedKey()
-                        }
-                    });
+                    viewUtils.setSessionStorageComboBoxKey(this, "filterBookingTypeKey");
                     oController.handleFilterItems("iBookingType", oComboBox.getSelectedKey());
                 }
-            });
-
-            oView.oBookingTypeFilter.attachBrowserEvent(
+            }).attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {
                         this.setSelectedKey(sessionStorage.filterBookingTypeKey)
@@ -122,18 +114,10 @@
                 ],
                 selectedKey: "all",
                 selectionChange: function() {
-                    const sInputValue = this._getInputValue();
-                    const oComboBox = this;
-                    this.getItems().forEach(function(item) {
-                        if(sInputValue === item.getText()) {
-                            sessionStorage.filterAccountKey = oComboBox.getSelectedKey()
-                        }
-                    });
+                    viewUtils.setSessionStorageComboBoxKey(this, "filterAccountKey");
                     // oController.handleFilterItems("sAccountId", oComboBox.getSelectedKey()); TODO: set up filter
                 }
-            });
-
-            oView.oAccountFilter.attachBrowserEvent(
+            }).attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {
                         this.setSelectedKey(sessionStorage.filterAccountKey);
@@ -163,18 +147,10 @@
                 ],
                 selectedKey: "all",
                 selectionChange: function() {
-                    const sInputValue = this._getInputValue();
-                    const oComboBox = this;
-                    this.getItems().forEach(function(item) {
-                        if(sInputValue === item.getText()) {
-                            sessionStorage.filterFrequencyKey = oComboBox.getSelectedKey()
-                        }
-                    });
+                    viewUtils.setSessionStorageComboBoxKey(this, "filterFrequencyKey");
                     oController.handleFilterItems("iBookingFrequency", oComboBox.getSelectedKey());
                 }
-            });
-
-            oView.oFrequencyFilter.attachBrowserEvent(
+            }).attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {
                         this.setSelectedKey(sessionStorage.filterFrequencyKey);
@@ -204,18 +180,10 @@
                 ],
                 selectedKey: "all",
                 selectionChange: function() {
-                    const sInputValue = this._getInputValue();
-                    const oComboBox = this;
-                    this.getItems().forEach(function(item) {
-                        if(sInputValue === item.getText()) {
-                            sessionStorage.filterPeriodKey = oComboBox.getSelectedKey()
-                        }
-                    });
+                    viewUtils.setSessionStorageComboBoxKey(this, "filterPeriodKey");
                     //oController.handleFilterItems("BookingPeriod", oComboBox.getSelectedKey()); TODO: custom filter which calculates the period
                 }
-            });
-
-            oView.oPeriodFilter.attachBrowserEvent(
+            }).attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {
                         this.setSelectedKey(sessionStorage.filterPeriodKey);
@@ -275,8 +243,15 @@
                 ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
+                    viewUtils.setSessionStorageComboBoxKey(this, "bookingType");
                 }
-            });
+            }).attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.bookingType);
+                    };
+                }
+            );
             const oAccountComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("account.select"),
                 items: [
@@ -291,8 +266,15 @@
                 ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
+                    viewUtils.setSessionStorageComboBoxKey(this, "bookingAccount");
                 }
-            });
+            }).attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.bookingAccount);
+                    };
+                }
+            );
             const oAccountAddButton = new sap.m.Button({
                 tooltip: oBundle.getText("account.add"),
                 icon: "sap-icon://add",
@@ -329,12 +311,18 @@
                 ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
-                    // oController.handleFilterItems();
+                    viewUtils.setSessionStorageComboBoxKey(this, "bookingFrequency");
                 },
                 layoutData: new sap.ui.layout.GridData({
                     span: "L4 M4 S4"
                 })
-            });
+            }).attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.bookingFrequency);
+                    };
+                }
+            );
             const oBookingDatePicker = new sap.m.DatePicker({
                 // TODO: initializing etc
                 tooltip: oBundle.getText("date.select"),
@@ -343,6 +331,7 @@
                     oView.bInputAlready = true;
                 }
             });
+
             let oDateFormElement = new sap.ui.layout.form.FormElement({
                 fields: [ oBookingDatePicker, oBookingFrequencyComboBox ]
             });
@@ -361,8 +350,15 @@
                 ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
+                    viewUtils.setSessionStorageComboBoxKey(this, "bookingCategory");
+                },
+            }).attachBrowserEvent(
+                "focusout",function() {
+                    if(this.getSelectedKey() === "") {
+                        this.setSelectedKey(sessionStorage.bookingCategory);
+                    };
                 }
-            });
+            );
             const oCategoryAddButton = new sap.m.Button({
                 tooltip: oBundle.getText("category.add"),
                 icon: "sap-icon://add",
@@ -382,9 +378,8 @@
                 }),
                 liveChange: function(){
                     oView.bInputAlready = true;
-                }
-            });
-            oValueInput.attachBrowserEvent(
+                },
+            }).attachBrowserEvent(
                 "focusout",function() {
                     let sInput = this.getValue();
                     if(sInput === "") {

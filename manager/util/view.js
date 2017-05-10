@@ -40,6 +40,15 @@
 		}
 	};
 
+	manager.util.View.prototype.setSessionStorageComboBoxKey = function(oComboBox, sTarget) {
+        const sInputValue = oComboBox._getInputValue();
+        oComboBox.getItems().forEach(function(item) {
+            if(sInputValue === item.getText()) {
+                sessionStorage[sTarget] = oComboBox.getSelectedKey();
+            }
+        });
+	};
+
 	manager.util.View.prototype.deleteTableItemByKeyAndValue = function(oTable, sKey, mValue) {
 		if (oTable && sKey && mValue) {
 			let oTableData = oTable.getModel().getData();
@@ -86,6 +95,17 @@
 			sSeconds = sSeconds > 9 ? sSeconds : "0" + sSeconds;
         	return "" + sYear + "-" + sMonth + "-" + sDay +  " " + sHours + ":" + sMinutes + ":" + sSeconds;
         }
+    };
+
+	/**
+	 * formats backend string JS Date Object
+	 * @param sDate
+	 * @returns {object} {format: DD-MM-YYYY}
+	 */
+	manager.util.View.prototype.formatBackendStringToFrontendDate = function(sDate) {
+		let oDate = sDate.getDateValue();
+		const oDateFormat = new sap.ui.core.format.DateFormat.getDateInstance({ style: "medium" }, "EN");
+		return oDateFormat.format(new Date(oDate));
     };
 
 	/**

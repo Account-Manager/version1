@@ -5,7 +5,7 @@
 			console.log("Controller called!");
 			const oController = this;
             const oView = oController.getView();
-			oController.initBookingCreateDialog();
+            oController.initBookingCreateDialog();
 			// oWebservice.getBookingExample("Loading booking data", function(oResponse) { // TODO: translate loading text
 			// 	if (oResponse && !oResponse.bError) {
 			// 		let oBookings = oResponse.aBookings;
@@ -25,6 +25,7 @@
 					let oBookingData = new sap.ui.model.json.JSONModel();
 					oBookingData.setData(oBookings);
 					oView.oBookingTable.setModel(oBookingData);
+                    oController.handleResetFilters();
 				}
 			});
 
@@ -195,16 +196,56 @@
 		    const aKeys = this.getBookingTableColumnKeys();
 		    aKeys.forEach(function (sKey) {
 		        switch (sKey) {
-					case "sBookingTitle": // "description" :
+                    case "iBookingType":
+                        oTemplate.push(new sap.m.Text({
+                                wrapping: false,
+                                maxLines: 1,
+                                text: {
+                                    path: sKey,
+									formatter: function(sValue) {
+                                        switch(sValue) {
+                                            case "0":
+                                                return oBundle.getText("booking.type.expense");
+                                            case "1":
+                                                return oBundle.getText("booking.type.income");
+                                        }
+									}
+                                },
+                            })
+                        );
+                        break;
+                    case "iBookingFrequency":
+                        oTemplate.push(new sap.m.Text({
+                                wrapping: false,
+                                maxLines: 1,
+                                text: {
+                                    path: sKey,
+                                    formatter: function(sValue) {
+                                    	switch(sValue) {
+											case "0":
+                                                return oBundle.getText("booking.frequency.unique");
+											case "1":
+                                                return oBundle.getText("booking.frequency.daily");
+											case "2":
+                                                return oBundle.getText("booking.frequency.weekly");
+											case "3":
+                                                return oBundle.getText("booking.frequency.monthly");
+										}
+                                    }
+                                },
+                            })
+                        );
+                        break;
+                    case "sBookingTitle": // "description" :
                         oTemplate.push(new sap.m.Input({
                                 placeholder: oBundle.getText("std.description"),
                                 value: {
                                     path: sKey
                                 }
                             })
-						);
+                        );
                         break;
-					case "fBookingValue": // "value" :
+                    case "fBookingValue": // "value" :
                         let oInput = new sap.m.Input({
                             placeholder: oBundle.getText("std.value"),
                             textAlign: sap.ui.core.TextAlign.End,
@@ -212,7 +253,10 @@
                             width: "100%",
                             type: sap.m.InputType.Number,
                             value: {
-                                path: sKey
+                                path: sKey,
+                                formatter: function(sValue) {
+                                    return parseFloat(sValue).toFixed(2)
+                                }
                             }
                         });
                         oInput.attachBrowserEvent(
@@ -228,16 +272,6 @@
                             }
                         );
                         oTemplate.push(oInput);
-                        break;
-                    case "iBookingType":        //TODO: add formatter which converts ints to logical strings
-                        oTemplate.push(new sap.m.Text({
-                                wrapping: false,
-                                maxLines: 1,
-                                text: {
-                                    path: sKey
-                                },
-                            })
-                        );
                         break;
                     default:
                         oTemplate.push(new sap.m.Text({
@@ -269,9 +303,13 @@
 		handleResetFilters: function() {
 		    const oView = this.getView();
             oView.oBookingTypeFilter.setSelectedKey("all");
+            sessionStorage.filterBookingTypeKey = "all";
             oView.oAccountFilter.setSelectedKey("all");
+            sessionStorage.filterAccountKey = "all";
             oView.oFrequencyFilter.setSelectedKey("all");
+            sessionStorage.filterFrequencyKey = "all";
             oView.oPeriodFilter.setSelectedKey("all");
+            sessionStorage.filterPeriodKey = "all";
             const oBinding = oView.oBookingTable.getBinding("items");
             oBinding.filter();
         },
@@ -280,10 +318,14 @@
 			const oView = this.getView();
             const aFormElements = oView.oBookingCreateDialog.getContent()[0].getFormContainers()[0].getFormElements();
             aFormElements[0].getFields()[0].setSelectedKey("expense");
+            sessionStorage.bookingType = "expense";
             aFormElements[0].getFields()[1].setSelectedKey("001");
+            sessionStorage.bookingAccount = "expense";
             aFormElements[1].getFields()[0].setDateValue(new Date());
             aFormElements[1].getFields()[1].setSelectedKey("unique");
+            sessionStorage.bookingFrequency = "expense";
             aFormElements[2].getFields()[0].setSelectedKey("general");
+            sessionStorage.bookingCategory = "general";
             aFormElements[2].getFields()[2].setValue("");
             aFormElements[3].getFields()[0].setValue("");
             oView.bInputAlready = false;
