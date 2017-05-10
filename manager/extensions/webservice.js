@@ -8,11 +8,18 @@ sap.ui.define(["jquery.sap.global"],
 
         };
 
-        oWebservice.prototype.execute = function(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
+        oWebservice.prototype.execute = function(sLoadingText, mTarget, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
         	const oLoadingDialog = new sap.m.BusyDialog({
 				text: sLoadingText,
 				title: oBundle.getText("std.loading")
 			});
+
+        	let sUrlPath = "";
+        	if (typeof mTarget === "string") {
+        		sUrlPath = mTarget;
+			} else if (typeof mTarget === "object") {
+        		sUrlPath = encodeURI(`http://api.track.bplaced.net/${mTarget.sAction}.php?sFunctionName=${mTarget.sFunctionName}`);
+			}
 
 			oOptions = oOptions || {};
 			if (!oOptions.bHideLoading) {

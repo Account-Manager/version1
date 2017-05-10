@@ -563,9 +563,10 @@
                 contentMiddle: [
                 	new sap.m.Button({
 						text: "Admin-Panel",
-						icon: "sap-icon://role",
+						icon: "sap-icon://key-user-settings",
 						press: function(oEvent) {
 							oView.oAdminPanel.open();
+							oView.btnCloseAdminPanel.focus();
 							oController.getAdminPanelOverview();
 						}
 					}),

@@ -6,28 +6,37 @@
 			const oController = this;
             const oView = oController.getView();
             oController.initBookingCreateDialog();
-			// oWebservice.getBookingExample("Loading booking data", function(oResponse) { // TODO: translate loading text
-			// 	if (oResponse && !oResponse.bError) {
-			// 		let oBookings = oResponse.aBookings;
-			// 		let oBookingData = new sap.ui.model.json.JSONModel();
-			// 		oBookingData.setData(oBookings);
-			// 		oView.oBookingTable.setModel(oBookingData);
-			// 	}
-			// });
+
 			let oDate = new Date();
 			let oStartDate = new Date(oDate.getFullYear(), oDate.getMonth(), 1);
 			let oEndDate = new Date(oDate.getFullYear(), oDate.getMonth() + 1, 0);
 			let sStartDate = viewUtils.formatDateToBackendString(oStartDate);
 			let sEndDate = viewUtils.formatDateToBackendString(oEndDate);
-			oWebservice.getBookings("Loading booking data", sStartDate, sEndDate, function(oResponse) { // TODO: translate loading text
+
+			oWebservice1.getUserAccounts("Loading accounts...", function(oResponse) {
 				if (oResponse && !oResponse.bError) {
-					let oBookings = oResponse.aBookings;
-					let oBookingData = new sap.ui.model.json.JSONModel();
-					oBookingData.setData(oBookings);
-					oView.oBookingTable.setModel(oBookingData);
-                    oController.handleResetFilters();
+					console.log("Accounts: ");
+					console.log(oResponse.aAccounts);
+					oWebservice1.getBookings("Loading booking data", oResponse.aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
+						let oBookings = oResponseBooking.aBookings;
+						console.log(oBookings);
+						let oBookingData = new sap.ui.model.json.JSONModel();
+						oBookingData.setData(oBookings);
+						oView.oBookingTable.setModel(oBookingData);
+						oController.handleResetFilters();
+					});
 				}
 			});
+
+			// oWebservice.getBookings("Loading booking data", sStartDate, sEndDate, function(oResponse) { // TODO: translate loading text
+			// 	if (oResponse && !oResponse.bError) {
+			// 		let oBookings = oResponse.aBookings;
+			// 		let oBookingData = new sap.ui.model.json.JSONModel();
+			// 		oBookingData.setData(oBookings);
+			// 		oView.oBookingTable.setModel(oBookingData);
+             //        oController.handleResetFilters();
+			// 	}
+			// });
 
 			oView.oAdminPanel = oController.makeAdminPanel();
 		},
@@ -181,14 +190,24 @@
 
 		getBookingTableColumnKeys: function() {
 			return [
-				"oBookingDate",
+				"sBookingDate",
 				"iBookingType",
 				"iBookingFrequency",
-				"iBookingCategory",
-				"sBookingTitle",
-				"fBookingValue"
-			];
-		  // return ["date", "bookingType", "frequency", "category", "description", "value"]
+				"sMainCategory",
+				"sBookingDescription",
+				"fBookingValue",
+				"iAccountId",
+				"iBookingId",
+				"sSubCategory"
+			]
+			// return [
+			// 	"oBookingDate",
+			// 	"iBookingType",
+			// 	"iBookingFrequency",
+			// 	"iBookingCategory",
+			// 	"sBookingTitle",
+			// 	"fBookingValue"
+			// ];
         },
 
 		getBookingTableTemplate: function() {
@@ -204,10 +223,14 @@
                                     path: sKey,
 									formatter: function(sValue) {
                                         switch(sValue) {
-                                            case "0":
+                                            case 0:
                                                 return oBundle.getText("booking.type.expense");
-                                            case "1":
+                                                break;
+                                            case 1:
                                                 return oBundle.getText("booking.type.income");
+                                                break;
+											default:
+												break;
                                         }
 									}
                                 },
@@ -222,13 +245,13 @@
                                     path: sKey,
                                     formatter: function(sValue) {
                                     	switch(sValue) {
-											case "0":
+											case 0:
                                                 return oBundle.getText("booking.frequency.unique");
-											case "1":
+											case 1:
                                                 return oBundle.getText("booking.frequency.daily");
-											case "2":
+											case 2:
                                                 return oBundle.getText("booking.frequency.weekly");
-											case "3":
+											case 3:
                                                 return oBundle.getText("booking.frequency.monthly");
 										}
                                     }
@@ -236,7 +259,7 @@
                             })
                         );
                         break;
-                    case "sBookingTitle": // "description" :
+                    case "sBookingDescription":
                         oTemplate.push(new sap.m.Input({
                                 placeholder: oBundle.getText("std.description"),
                                 value: {
@@ -245,7 +268,7 @@
                             })
                         );
                         break;
-                    case "fBookingValue": // "value" :
+                    case "fBookingValue":
                         let oInput = new sap.m.Input({
                             placeholder: oBundle.getText("std.value"),
                             textAlign: sap.ui.core.TextAlign.End,
@@ -524,17 +547,25 @@
 					// }, sStartDate, sEndDate);
 				}
 			});
-			oAdminPanel.addButton(oView.btnUserAdd);
-			oAdminPanel.addButton(oView.btnUserDelete);
-			oAdminPanel.addButton(oView.btnAccountAdd);
-			oAdminPanel.addButton(oView.btnBookingAdd);
-			oAdminPanel.addButton(new sap.m.Button({
+			oView.btnCloseAdminPanel = new sap.m.Button({
 				text: "Close",
 				icon: "sap-icon://sys-cancel-2",
 				press: function(oEvent) {
 					oView.oAdminPanel.close();
 				}
-			}));
+			});
+			oAdminPanel.addButton(oView.btnUserAdd);
+			oAdminPanel.addButton(oView.btnUserDelete);
+			oAdminPanel.addButton(oView.btnAccountAdd);
+			oAdminPanel.addButton(oView.btnBookingAdd);
+			oAdminPanel.addButton(oView.btnCloseAdminPanel);
+			// oAdminPanel.addButton(new sap.m.Button({
+			// 	text: "Close",
+			// 	icon: "sap-icon://sys-cancel-2",
+			// 	press: function(oEvent) {
+			// 		oView.oAdminPanel.close();
+			// 	}
+			// }));
 
 			oAdminPanel.addContent(oView.oIconTabBar);
 
