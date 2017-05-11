@@ -230,6 +230,20 @@
                 ]
             }).addStyleClass("sapUiNoContentPadding");
 
+            window.addEventListener('resize', fnResizeButtonTexts);
+
+            function fnResizeButtonTexts() {
+                if(window.innerWidth < 440) {
+                    btnBookingAdd.setText();
+                    btnBookingEdit.setText();
+                    btnBookingDelete.setText();
+                } else if(window.innerWidth > 440) {
+                    btnBookingAdd.setText(oBundle.getText("std.add"));
+                    btnBookingEdit.setText(oBundle.getText("std.edit"));
+                    btnBookingDelete.setText(oBundle.getText("std.delete"));
+                }
+            };
+
             // ********** booking create/edit dialog ********** // TODO: edit function
 
             oView.bInputAlready = false;
@@ -272,7 +286,10 @@
                 selectionChange: function(){
                     oView.bInputAlready = true;
                     viewUtils.setSessionStorageComboBoxKey(this, "bookingAccount");
-                }
+                },
+                layoutData: new sap.ui.layout.GridData({
+                    span: "L6 M6 S6"
+                })
             }).attachBrowserEvent(
                 "focusout",function() {
                     if(this.getSelectedKey() === "") {

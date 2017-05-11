@@ -389,8 +389,6 @@
             const aFormElements = oView.oBookingCreateDialog.getContent()[0].getFormContainers()[0].getFormElements();
             aFormElements[0].getFields()[0].setSelectedKey("expense");
             sessionStorage.bookingType = "expense";
-            aFormElements[0].getFields()[1].setSelectedKey("001");
-            sessionStorage.bookingAccount = "expense";
             aFormElements[1].getFields()[0].setDateValue(new Date());
             aFormElements[1].getFields()[1].setSelectedKey("unique");
             sessionStorage.bookingFrequency = "expense";
