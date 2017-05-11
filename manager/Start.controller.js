@@ -15,7 +15,11 @@
 
 			oWebservice1.getUserAccounts("Loading accounts...", function(oResponse) {
 				if (oResponse && !oResponse.bError) {
-					oWebservice1.getBookings("Loading booking data", oResponse.aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
+					let aAccounts = [];
+					oResponse.aAccounts.forEach(function(oItem) {
+						aAccounts.push(oItem.sAccountId);
+					});
+					oWebservice1.getBookings("Loading booking data", aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
 						let oBookings = oResponseBooking.aBookings;
 						let oBookingData = new sap.ui.model.json.JSONModel();
 						oBookingData.setData(oBookings);
