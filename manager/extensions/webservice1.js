@@ -53,11 +53,11 @@ sap.ui.define(["jquery.sap.global"],
 				beginButton: new sap.m.Button({
 					text: oBundle.getText("std.ok"),
 					press: function() {
-						oDialog.close();
+						oErrorDialog.close();
 					}
 				}),
 				afterClose: function() {
-					oDialog.destroy();
+					oErrorDialog.destroy();
 				}
 			});
 
@@ -183,6 +183,17 @@ sap.ui.define(["jquery.sap.global"],
 				"iBookingFrequency": iBookingFrequency,
 				"iBookingType": iBookingType,
 				"fBookingValue": fBookingValue
+			});
+		};
+
+		oWebservice1.prototype.getCategories = function (sLoadingText, aAccounts, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "get",
+				"sFunctionName": "getCategories"
+			};
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"aAccounts": aAccounts
 			});
 		};
 

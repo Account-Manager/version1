@@ -26,6 +26,25 @@
 						oView.oBookingTable.setModel(oBookingData);
 						oController.handleResetFilters();
 					});
+
+					oWebservice1.getCategories("Loading categories...", aAccounts, function(oResponseCategories) {
+						if (oResponseCategories && !oResponseCategories.bError) {
+							let oCategories = oResponseCategories.aMainCategories;
+							oCategories.forEach(function(oItem) {
+								oView.oCategoryComboBox.addItem(new sap.ui.core.Item({
+									key: oItem.iMainCategoryId,
+									text: oItem.sMainCategoryName,
+									customData: new sap.ui.core.CustomData({
+										key: "iAccountId",
+										value: oItem.iAccountId
+									})
+								}));
+							});
+							oView.oCategoryComboBox.setSelectedKey(oCategories[0].iMainCategoryId);
+							sessionStorage.bookingCategory = oAccounts[0].sAccountId;
+						}
+					});
+
 					let oAccounts = oResponse.aAccounts;
 					let oAccountData = new sap.ui.model.json.JSONModel();
 					oAccountData.setData(oAccounts);
@@ -40,16 +59,6 @@
 					sessionStorage.bookingAccount = oAccounts[0].sAccountId;
 				}
 			});
-
-			// oWebservice.getBookings("Loading booking data", sStartDate, sEndDate, function(oResponse) { // TODO: translate loading text
-			// 	if (oResponse && !oResponse.bError) {
-			// 		let oBookings = oResponse.aBookings;
-			// 		let oBookingData = new sap.ui.model.json.JSONModel();
-			// 		oBookingData.setData(oBookings);
-			// 		oView.oBookingTable.setModel(oBookingData);
-             //        oController.handleResetFilters();
-			// 	}
-			// });
 
 			oView.oAdminPanel = oController.makeAdminPanel();
 		},
@@ -98,11 +107,11 @@
 				tooltip: "Häufigkeit"
 			});
 			let inpBookingCategory = new sap.m.Input({
-				value: oItem.iBookingCategory,
+				value: oItem.sBookingCategory,
 				tooltip: "Kategorie"
 			});
 			let inpBookingTitle = new sap.m.Input({
-				value: oItem.sBookingTitle,
+				value: oItem.sBookingDescription,
 				tooltip: "Beschreibung"
 			});
 			let inpBookingValue = new sap.m.Input({
@@ -648,11 +657,48 @@
 			// let oBookingType = new
 		},
 
-		saveBooking: function(oEvent, oBookingFormContainer) {
+		saveBooking: function(oEvent) {
 			const oController = this;
 			const oView = oController.getView();
 
-			console.log(oBookingFormContainer);
+			let iType = (oView.oBookingTypeComboBox.getSelectedKey() === "income") ? 0 : 1;
+			let iAccountId = oView.oAccountComboBox.getSelectedKey();
+			let sBookingDate = viewUtils.formatDateToBackendString(oView.oBookingDatePicker.getDateValue());
+			let sFrequencyKey = oView.oBookingFrequencyComboBox.getSelectedKey();
+			let iFrequency = -1;
+			switch(sFrequencyKey) {
+				case "unique":
+					iFrequency = 0;
+					break;
+				case "daily":
+					iFrequency = 1;
+					break;
+				case "weekly":
+					iFrequency = 2;
+					break;
+				case "monthly":
+					iFrequency = 3;
+					break;
+				default:
+					break;
+			}
+			let iBookingCategoryId = oView.oCategoryComboBox.getSelectedKey();
+			let fBookingValue = 0.0;
+			fBookingValue = parseFloat(oView.oValueInput.getValue()); // don't use toFixed(2), as it returns string
+			let sBookingDescription = oView.oTextArea.getValue();
+
+			if (typeof fBookingValue !== "number" || fBookingValue === NaN) {
+				// TODO: fox check, this one isn't working
+				// fBookingValue false
+				console.log("fBookingValue false!");
+			}
+			console.log(iType);
+			console.log(iAccountId);
+			console.log(sBookingDate);
+			console.log(iFrequency);
+			console.log(iBookingCategoryId);
+			console.log(fBookingValue + " ... " + typeof fBookingValue);
+			console.log(sBookingDescription);
 		},
 
 		showUserAddDialog: function(oEvent) {

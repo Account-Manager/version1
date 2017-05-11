@@ -273,16 +273,6 @@
             );
             oView.oAccountComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("account.select"),
-                // items: [
-                //     new sap.ui.core.Item({
-                //         key: "001",
-                //         text: "Giro" // TODO: translation
-                //     }),
-                //     new sap.ui.core.Item({
-                //         key: "002",
-                //         text: "PayPal" // TODO: translation
-                //     }),
-                // ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
                     viewUtils.setSessionStorageComboBoxKey(this, "bookingAccount");
@@ -297,7 +287,7 @@
                     };
                 }
             );
-            const oAccountAddButton = new sap.m.Button({
+            oView.oAccountAddButton = new sap.m.Button({
                 tooltip: oBundle.getText("account.add"),
                 icon: "sap-icon://add",
                 press: function() {
@@ -308,7 +298,7 @@
                 })
             });
             let oAccountFormElement = new sap.ui.layout.form.FormElement({
-                fields: [ oView.oBookingTypeComboBox, oView.oAccountComboBox, oAccountAddButton ]
+                fields: [ oView.oBookingTypeComboBox, oView.oAccountComboBox, oView.oAccountAddButton ]
             });
 
             oView.oBookingFrequencyComboBox = new sap.m.ComboBox({
@@ -366,16 +356,16 @@
 
             oView.oCategoryComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("category.select"),
-                items: [
-                    new sap.ui.core.Item({
-                        key: "general",
-                        text: "General" // TODO: translation
-                    }),
-                    new sap.ui.core.Item({
-                        key: "food",
-                        text: "Food" // TODO: translation
-                    }),
-                ],
+                // items: [
+                //     new sap.ui.core.Item({
+                //         key: "general",
+                //         text: "General" // TODO: translation
+                //     }),
+                //     new sap.ui.core.Item({
+                //         key: "food",
+                //         text: "Food" // TODO: translation
+                //     }),
+                // ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
                     viewUtils.setSessionStorageComboBoxKey(this, "bookingCategory");
