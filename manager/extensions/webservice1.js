@@ -134,6 +134,14 @@ sap.ui.define(["jquery.sap.global"],
 			this.execute(sLoadingText, oTarget, fnSuccessCallback);
 		};
 
+		/**
+		 * returns bookings for specified accounts and period
+		 * @param sLoadingText
+		 * @param aAccountIds
+		 * @param sStartDate
+		 * @param sEndDate
+		 * @param fnSuccessCallback
+		 */
 		oWebservice1.prototype.getBookings = function (sLoadingText, aAccountIds, sStartDate, sEndDate, fnSuccessCallback) {
 			let oTarget = {
 				"sAction": "get",
@@ -144,6 +152,37 @@ sap.ui.define(["jquery.sap.global"],
 				"aAccounts": aAccountIds,
 				"sStartDate": sStartDate,
 				"sEndDate": sEndDate
+			});
+		};
+
+		/**
+		 * saves booking and returns id
+		 * @param sLoadingText
+		 * @param iAccountId
+		 * @param iMainCategoryId
+		 * @param iSubCategoryId
+		 * @param sBookingDate
+		 * @param sBookingDescription
+		 * @param iBookingFrequency
+		 * @param iBookingType
+		 * @param fBookingValue
+		 * @param fnSuccessCallback
+		 */
+		oWebservice1.prototype.addBooking = function(sLoadingText, iAccountId, iMainCategoryId, iSubCategoryId, sBookingDate, sBookingDescription, iBookingFrequency, iBookingType, fBookingValue, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "set",
+				"sFunctionName": "addBooking"
+			};
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"iAccountId": iAccountId,
+				"iMainCategoryId": iMainCategoryId,
+				"iSubCategoryId": iSubCategoryId,
+				"sBookingDate": sBookingDate,
+				"sBookingDescription": sBookingDescription,
+				"iBookingFrequency": iBookingFrequency,
+				"iBookingType": iBookingType,
+				"fBookingValue": fBookingValue
 			});
 		};
 

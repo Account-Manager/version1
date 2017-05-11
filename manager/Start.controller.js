@@ -15,16 +15,25 @@
 
 			oWebservice1.getUserAccounts("Loading accounts...", function(oResponse) {
 				if (oResponse && !oResponse.bError) {
-					console.log("Accounts: ");
-					console.log(oResponse.aAccounts);
 					oWebservice1.getBookings("Loading booking data", oResponse.aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
 						let oBookings = oResponseBooking.aBookings;
-						console.log(oBookings);
 						let oBookingData = new sap.ui.model.json.JSONModel();
 						oBookingData.setData(oBookings);
 						oView.oBookingTable.setModel(oBookingData);
 						oController.handleResetFilters();
 					});
+					let oAccounts = oResponse.aAccounts;
+					let oAccountData = new sap.ui.model.json.JSONModel();
+					oAccountData.setData(oAccounts);
+					oView.oAccountDataTable.setModel(oAccountData);
+					oAccounts.forEach(function(oItem) {
+						oView.oAccountComboBox.addItem(new sap.ui.core.Item({
+							key: oItem.sAccountId,
+							text: oItem.sAccountName
+						}));
+					});
+					oView.oAccountComboBox.setSelectedKey(oAccounts[0].sAccountId);
+					sessionStorage.bookingAccount = oAccounts[0].sAccountId;
 				}
 			});
 
@@ -186,6 +195,31 @@
                 })
             ];
 			return aColumns;
+		},
+
+		getAccountsTableColumnKeys: function() {
+			return [
+				"sAccountName",
+				"sAccountValue"
+			];
+		},
+
+		getAccountsTableTemplate: function() {
+			let oTemplate = [];
+			const sKeys = this.getAccountsTableColumnKeys();
+			sKeys.forEach(function(sKey) {
+				switch(sKey) {
+					case "sAccountName":
+						oTemplate.push(new sap.m.Text({
+							wrapping: false,
+							maxlines: 1,
+							text: {
+								path: sKey
+							}
+						}));
+				}
+			});
+			return oTemplate;
 		},
 
 		getBookingTableColumnKeys: function() {
@@ -610,6 +644,13 @@
 			// let oAccountId = new sap.m.Input({ value: "1" });
 			// let oBookingCategory = new sap.m.Input({ value: "1" });
 			// let oBookingType = new
+		},
+
+		saveBooking: function(oEvent, oBookingFormContainer) {
+			const oController = this;
+			const oView = oController.getView();
+
+			console.log(oBookingFormContainer);
 		},
 
 		showUserAddDialog: function(oEvent) {

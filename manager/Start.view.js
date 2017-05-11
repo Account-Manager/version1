@@ -11,7 +11,7 @@
 
             // ********** header **********
 
-            const oAccountDataTable = new sap.m.Table({
+            oView.oAccountDataTable = new sap.m.Table({
                 noDataText: oBundle.getText("std.noData"),
                 columns: [
                     new sap.m.Column({
@@ -28,6 +28,11 @@
                 width: "20rem"
             });
 
+			oView.oAccountDataTable.bindAggregation("items", "/", new sap.m.ColumnListItem({
+				cells: oController.getAccountsTableTemplate(),
+				vAlign: sap.ui.core.VerticalAlign.Middle
+			}));
+
             const oAccountStats = new sap.m.Label({
                 text: oBundle.getText("account.stats"),
                 width: "100%"
@@ -37,7 +42,7 @@
                 justifyContent: sap.m.FlexJustifyContent.End,
                 items: [
                     oAccountStats,
-                    oAccountDataTable
+                    oView.oAccountDataTable
                 ]
             });
 
@@ -229,7 +234,7 @@
 
             oView.bInputAlready = false;
 
-            const oBookingTypeComboBox = new sap.m.ComboBox({
+			oView.oBookingTypeComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("booking.type.select"),
                 items: [
                     new sap.ui.core.Item({
@@ -252,18 +257,18 @@
                     };
                 }
             );
-            const oAccountComboBox = new sap.m.ComboBox({
+            oView.oAccountComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("account.select"),
-                items: [
-                    new sap.ui.core.Item({
-                        key: "001",
-                        text: "Giro" // TODO: translation
-                    }),
-                    new sap.ui.core.Item({
-                        key: "002",
-                        text: "PayPal" // TODO: translation
-                    }),
-                ],
+                // items: [
+                //     new sap.ui.core.Item({
+                //         key: "001",
+                //         text: "Giro" // TODO: translation
+                //     }),
+                //     new sap.ui.core.Item({
+                //         key: "002",
+                //         text: "PayPal" // TODO: translation
+                //     }),
+                // ],
                 selectionChange: function(){
                     oView.bInputAlready = true;
                     viewUtils.setSessionStorageComboBoxKey(this, "bookingAccount");
@@ -286,7 +291,7 @@
                 })
             });
             let oAccountFormElement = new sap.ui.layout.form.FormElement({
-                fields: [ oBookingTypeComboBox, oAccountComboBox, oAccountAddButton ]
+                fields: [ oView.oBookingTypeComboBox, oView.oAccountComboBox, oAccountAddButton ]
             });
 
             oView.oBookingFrequencyComboBox = new sap.m.ComboBox({
@@ -458,13 +463,20 @@
                 }
             });
 
+            const btnSaveBooking = new sap.m.Button({
+				text: oBundle.getText("booking.save"),
+				press: function(oEvent) {
+					oController.saveBooking(oEvent, oBookingFormContainer);
+				}
+			});
+
             // TODO: replace content with Form? uses auto-align etc
             oView.oBookingCreateDialog = new sap.m.Dialog({
                 title: oBundle.getText("booking.add"), // TODO: translation
                 content: [ oBookingForm ],
                 contentWidth: "30%",
 				stretch: !!sap.ui.Device.system.phone,
-                buttons: [ btnResetBooking, btnCloseBooking ]
+                buttons: [ btnSaveBooking, btnResetBooking, btnCloseBooking ]
             });
 
             // ********** content **********
