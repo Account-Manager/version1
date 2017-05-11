@@ -100,12 +100,13 @@
 	/**
 	 * formats backend string JS Date Object
 	 * @param sDate
-	 * @returns {object} {format: DD-MM-YYYY}
+	 * @returns {object} {format: depending on language}
 	 */
 	manager.util.View.prototype.formatBackendStringToFrontendDate = function(sDate) {
-		let oDate = sDate.getDateValue();
-		const oDateFormat = new sap.ui.core.format.DateFormat.getDateInstance({ style: "medium" }, "EN");
-		return oDateFormat.format(new Date(oDate));
+	    const oFormatOtions = { style: "medium" };
+        const oLocale = new sap.ui.core.Locale(storage.getLanguage());
+		const oDateFormat = sap.ui.core.format.DateFormat.getDateInstance(oFormatOtions, oLocale);
+		return oDateFormat.format(new Date(sDate));
     };
 
 	/**

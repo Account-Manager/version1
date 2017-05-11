@@ -289,7 +289,7 @@
                 fields: [ oBookingTypeComboBox, oAccountComboBox, oAccountAddButton ]
             });
 
-            const oBookingFrequencyComboBox = new sap.m.ComboBox({
+            oView.oBookingFrequencyComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("booking.frequency.select"),
                 items: [
                     new sap.ui.core.Item({
@@ -314,7 +314,7 @@
                     viewUtils.setSessionStorageComboBoxKey(this, "bookingFrequency");
                 },
                 layoutData: new sap.ui.layout.GridData({
-                    span: "L4 M4 S4"
+                    span: "L5 M5 S5"
                 })
             }).attachBrowserEvent(
                 "focusout",function() {
@@ -323,20 +323,26 @@
                     };
                 }
             );
-            const oBookingDatePicker = new sap.m.DatePicker({
+            oView.oBookingDatePicker = new sap.m.DatePicker({
                 // TODO: initializing etc
                 tooltip: oBundle.getText("date.select"),
                 dateValue: new Date(),
-                change: function(){
-                    oView.bInputAlready = true;
+                change: function(oEvent){
+                    let bValid   = oEvent.getParameter("valid");
+                    if(!bValid){
+                        this.setValueState(sap.ui.core.ValueState.Error);
+                    } else {
+                        this.setValueState(sap.ui.core.ValueState.None);
+                        oView.bInputAlready = true;
+                    }
                 }
             });
 
             let oDateFormElement = new sap.ui.layout.form.FormElement({
-                fields: [ oBookingDatePicker, oBookingFrequencyComboBox ]
+                fields: [ oView.oBookingDatePicker, oView.oBookingFrequencyComboBox ]
             });
 
-            const oCategoryComboBox = new sap.m.ComboBox({
+            oView.oCategoryComboBox = new sap.m.ComboBox({
                 tooltip: oBundle.getText("category.select"),
                 items: [
                     new sap.ui.core.Item({
@@ -370,11 +376,12 @@
                 })
             });
 
-            const oValueInput = new sap.m.Input({
+            oView.oValueInput = new sap.m.Input({
                 placeholder: oBundle.getText("std.value"),
                 type: sap.m.InputType.Number,
+                style: "bold",
                 layoutData: new sap.ui.layout.GridData({
-                    span: "L4 M4 S4"
+                    span: "L3 M3 S3"
                 }),
                 liveChange: function(){
                     oView.bInputAlready = true;
@@ -393,17 +400,17 @@
             );
 
             let oCategoryAndValueFormElement = new sap.ui.layout.form.FormElement({
-                fields: [ oCategoryComboBox, oCategoryAddButton, oValueInput ]
+                fields: [ oView.oCategoryComboBox, oCategoryAddButton, oView.oValueInput ]
             });
 
-            const oTextArea = new sap.m.TextArea({
+            oView.oTextArea = new sap.m.TextArea({
                 placeholder: oBundle.getText("std.description"),
                 liveChange: function(){
                     oView.bInputAlready = true;
                 }
             });
             let oDescriptionFormElement = new sap.ui.layout.form.FormElement({
-                fields: [ oTextArea ]
+                fields: [ oView.oTextArea ]
             });
 
             let oBookingFormContainer = new sap.ui.layout.form.FormContainer({

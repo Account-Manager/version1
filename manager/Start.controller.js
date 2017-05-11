@@ -215,6 +215,19 @@
 		    const aKeys = this.getBookingTableColumnKeys();
 		    aKeys.forEach(function (sKey) {
 		        switch (sKey) {
+                    case "sBookingDate":
+                        oTemplate.push(new sap.m.Text({
+                                wrapping: false,
+                                maxLines: 1,
+                                text: {
+                                    path: sKey,
+                                    formatter: function(sValue) {
+                                        return viewUtils.formatBackendStringToFrontendDate(sValue);
+                                    }
+                                },
+                            })
+                        );
+                        break;
                     case "iBookingType":
                         oTemplate.push(new sap.m.Text({
                                 wrapping: false,
@@ -273,7 +286,7 @@
                             placeholder: oBundle.getText("std.value"),
                             textAlign: sap.ui.core.TextAlign.End,
                             description: "€",
-                            width: "100%",
+                            width: "130%",
                             type: sap.m.InputType.Number,
                             value: {
                                 path: sKey,

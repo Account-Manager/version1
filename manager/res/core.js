@@ -13,14 +13,16 @@
 	jQuery.sap.require("manager.util.view");
 	jQuery.sap.require("manager.util.storage");
     jQuery.sap.require("sap.m.MessageBox");
+    jQuery.sap.require("sap.ui.core.format.DateFormat");
 
 	window.viewUtils = new manager.util.View();
 	window.storage = new manager.util.Storage();
 
+	storage.setLanguage("de");  //TODO changeable from frontend
+
     window.oBundle = jQuery.sap.resources({
         url: "manager/res/i18n/i18n.properties",
-        // locale: storage.getLanguage()
-        locale: "DE"
+        locale: storage.getLanguage()
     });
 
 	sap.ui.getCore().attachInit(function () {
