@@ -6,13 +6,13 @@
 		},
 		
 		createContent: function(oController) { // default OpenUI5 function
-            const oView = this;
+			const oView = this;
 			console.log("View called!");
 
-            // ********** header **********
+			// ********** header **********
 
-            oView.oAccountDataTable = new sap.m.Table({
-                noDataText: oBundle.getText("std.noData"),
+			oView.oAccountDataTable = new sap.m.Table({
+				noDataText: oBundle.getText("std.noData"),
                 columns: [
                     new sap.m.Column({
                         header: new sap.m.Label({
@@ -39,12 +39,20 @@
             });
 
             const oHeaderInfo = new sap.m.FlexBox({
-                justifyContent: sap.m.FlexJustifyContent.End,
+                justifyContent: sap.m.FlexJustifyContent.Begin,
                 items: [
-                    oAccountStats,
+                    // oAccountStats,
                     oView.oAccountDataTable
                 ]
             });
+
+            // accountinfo moved to panel over booking table
+			oView.oAccountsPanel = new sap.m.Panel({
+				headerText: "Accounts",
+				expandable: true,
+				expanded: false,
+				content: [ oHeaderInfo ]
+			});
 
             const btnBookingAdd = new sap.m.Button({
                 text: oBundle.getText("std.add"),
@@ -225,7 +233,8 @@
 
             oView.oHeaderPanel = new sap.m.Panel({
                 content: [
-                    oHeaderInfo,
+					oView.oAccountsPanel,
+                    // oHeaderInfo,
                     oHeaderToolBar
                 ]
             }).addStyleClass("sapUiNoContentPadding");

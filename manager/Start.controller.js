@@ -19,6 +19,11 @@
 					oResponse.aAccounts.forEach(function(oItem) {
 						aAccounts.push(oItem.sAccountId);
 					});
+
+					// TODO: check if aAccounts has items before execting following functions
+
+					oView.oAccountsPanel.setHeaderText(`Accounts (${aAccounts.length})`);
+
 					oWebservice1.getBookings("Loading booking data", aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
 						let oBookings = oResponseBooking.aBookings;
 						let oBookingData = new sap.ui.model.json.JSONModel();
