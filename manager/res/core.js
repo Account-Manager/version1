@@ -3,10 +3,8 @@
 
 	sap.ui.localResources("manager");
 	jQuery.sap.require("manager.extensions.webservice");
-	jQuery.sap.require("manager.extensions.webservice1");
 
     window.oWebservice = new manager.extensions.Webservice();
-    window.oWebservice1 = new manager.extensions.Webservice1();
 	
 	//window.app = new account.manager.App("account.manager.app");
 

@@ -1,48 +1,74 @@
 sap.ui.define(["jquery.sap.global"],
-    function(jQuery) {
-        "use strict";
+	function(jQuery) {
+		"use strict";
+		jQuery.sap.declare("manager.extensions.Webservice");
 
-        jQuery.sap.declare("manager.extensions.Webservice");
+		let oWebservice = manager.extensions.Webservice = function() {};
 
-        let oWebservice = manager.extensions.Webservice = function() {
-
-        };
-
-        oWebservice.prototype.execute = function(sLoadingText, mTarget, fnSuccessCallback, fnErrorCallback, oOptions, oParameters) {
-        	const oLoadingDialog = new sap.m.BusyDialog({
-				text: sLoadingText,
+		/**
+		 * executes AJAX call
+		 * @param sLoadingText: text shown in loading popover
+		 * @param mTarget: request target adress
+		 * @param fnSuccessCallback: function called on request success
+		 * @param fnErrorCallback: function called on request error
+		 * @param oParameters: parameters send with request
+		 * @param oOptions: options to modify request
+		 */
+		oWebservice.prototype.execute = function(sLoadingText, mTarget, fnSuccessCallback, fnErrorCallback, oParameters, oOptions) {
+			const oLoadingDialog = new sap.m.BusyDialog({
+				text: sLoadingText || oBundle.getText("std.loading"),
 				title: oBundle.getText("std.loading")
 			});
 
-        	let sUrlPath = "";
-        	if (typeof mTarget === "string") {
-        		sUrlPath = mTarget;
-			} else if (typeof mTarget === "object") {
-        		sUrlPath = encodeURI(`http://api.track.bplaced.net/${mTarget.sAction}.php?sFunctionName=${mTarget.sFunctionName}`);
-			}
-
+			/**
+			 * @attribute bHideLoading: don't show loading dialog
+			 * @attribute bUsePost: use method "POST" or "GET"
+			 * @attribute bAsync: ececute request async or not
+			 */
 			oOptions = oOptions || {};
 			if (!oOptions.bHideLoading) {
 				oLoadingDialog.open();
 			}
+			let bUsePost = oOptions.bUsePost || true; // set POST as default method
+			let bAsync = oOptions.bAsnyc || true; // execute AJAX call async by default
 
-            // initialize new JSON Model
-            let oModel = new sap.ui.model.json.JSONModel();
-            oParameters = oParameters || {};
-			let bUsePost = oOptions.bUsePost || false;
-			let bAsync = oOptions.bAsnyc || true;
+			oParameters = oParameters || {};
 
-            // check parameters
-            if ((sLoadingText && sLoadingText) !== "" && (sUrlPath && sUrlPath !== "")) {
-                // loading text AND urlpath must be typeof string and not empty
+			let oModel = new sap.ui.model.json.JSONModel();
+
+			let sUrlPath = "";
+			if (typeof mTarget === "string") {
+				sUrlPath = mTarget;
+			} else if (typeof mTarget === "object") {
+				sUrlPath = encodeURI(`http://api.track.bplaced.net/${mTarget.sAction}.php?sFunctionName=${mTarget.sFunctionName}`);
+			}
+
+			let oErrorDialog = new sap.m.Dialog({
+				title: oBundle.getText("std.error.occurred"),
+				type: "Message",
+				state: "Error",
+				content: new sap.m.Text({
+					text: oBundle.getText("std.error.loading")
+				}),
+				beginButton: new sap.m.Button({
+					text: oBundle.getText("std.ok"),
+					press: function() {
+						oErrorDialog.close();
+					}
+				}),
+				afterClose: function() {
+					oErrorDialog.destroy();
+				}
+			});
+
+			// loading text and urlpath must be (non empty) strings
+			if (sLoadingText && sLoadingText !== "" && sUrlPath && sUrlPath !== "") {
 				if (fnSuccessCallback && typeof fnSuccessCallback === "function") {
-					// check if error callback has been passed aswell
 					if (fnErrorCallback && typeof fnErrorCallback === "function") {
 						oModel.attachRequestCompleted(function(oEvent) {
 							// hide loading dialog
-							if (!oOptions.bHideLoading) {
-								oLoadingDialog.close();
-							}
+							if (!oOptions.bHideLoading) oLoadingDialog.close();
+
 							if (oEvent.mParameters.success) {
 								// call success callback function
 								fnSuccessCallback(this.getData());
@@ -52,192 +78,125 @@ sap.ui.define(["jquery.sap.global"],
 							}
 						});
 					} else {
-						// no error callback function defined, show standard error message
 						oModel.attachRequestCompleted(function(oEvent) {
 							// hide loading dialog
-							if (!oOptions.bHideLoading) {
-								oLoadingDialog.close();
-							}
+							if (!oOptions.bHideLoading) oLoadingDialog.close();
+
 							if (oEvent.mParameters.success) {
 								// call success callback function
 								fnSuccessCallback(this.getData());
 							} else {
-								// show error message
-								let oDialog = new sap.m.Dialog({
-									title: oBundle.getText("std.error.occurred"),
-									type: "Message",
-									state: "Error",
-									content: new sap.m.Text({
-										text: oBundle.getText("std.error.loading")
-									}),
-									beginButton: new sap.m.Button({
-										text: oBundle.getText("std.ok"),
-										press: function() {
-											oDialog.close();
-										}
-									}),
-									afterClose: function() {
-										oDialog.destroy();
-									}
-								});
-								oDialog.open();
+								// show standard error dialog
+								oErrorDialog.open();
 							}
 						});
 					}
-				} else if (fnErrorCallback && typeof fnErrorCallback === "function") {
-					// only error callback supplied
-					oModel.attachRequestCompleted(function(oEvent) {
-						// hide loading dialog
-						if (!oOptions.bHideLoading) {
-							oLoadingDialog.close();
-						}
-						if (!oEvent.mParameters.success) {
-							// call error callback function
-							fnErrorCallback();
-						}
-					});
-				} else {
-					// no success and error callback functions supplied
-					oModel.attachRequestCompleted(function(oEvent) {
-						// hide loading dialog
-						if (!oOptions.bHideLoading) {
-							oLoadingDialog.close();
-						}
-						if (!oEvent.mParameters.success) {
-							// show error message
-							let oDialog = new sap.m.Dialog({
-								title: oBundle.getText("std.error.occurred"),
-								type: "Message",
-								state: "Error",
-								content: new sap.m.Text({
-									text: oBundle.getText("std.error.loading")
-								}),
-								beginButton: new sap.m.Button({
-									text: oBundle.getText("std.ok"),
-									press: function() {
-										oDialog.close();
-									}
-								}),
-								afterClose: function() {
-									oDialog.destroy();
-								}
-							});
-							if (!oOptions.bHideLoading) {
-
-								oLoadingDialog.close();
-							}
-							oDialog.open();
-						}
-					});
 				}
+			} else if (fnErrorCallback && typeof fnErrorCallback === "function") {
+				// only error callback provided
 
-                oModel.loadData(sUrlPath, oParameters, bAsync, bUsePost ? "POST" : "GET"); // TODO: add async and method variable
-            }
-        };
+				oModel.attachRequestCompleted(function(oEvent) {
+					// hide loading dialog
+					if (!oOptions.bHideLoading) oLoadingDialog.close();
 
-        oWebservice.prototype.getBookingExample = function(sLoadingText, fnSuccessCallback, fnErrorCallback) {
-            let sUrlPath = "manager/res/data/bookingData.mock.json";
+					if (!oEvent.mParameters.success) {
+						// call success callback function
+						fnErrorCallback();
+					}
+				});
+			} else {
+				oModel.attachRequestCompleted(function(oEvent) {
+					// hide loading dialog
+					if (!oOptions.bHideLoading) oLoadingDialog.close();
 
-            this.execute(sLoadingText, sUrlPath, fnSuccessCallback, fnErrorCallback || undefined);
-        };
+					if (!oEvent.mParameters.success) {
+						// show standard error dialog
+						oErrorDialog.open();
+					}
+				});
+			}
 
-		oWebservice.prototype.getAdminPanelOverview = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/api/get.php?sFunctionName=adminGetOverview";
-			sUrlPath = encodeURI(sUrlPath);
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
+			// execute request
+			oModel.loadData(sUrlPath, oParameters, bAsync, bUsePost ? "POST" : "GET");
 		};
 
-		oWebservice.prototype.getUserData = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/php/getData/getUserData.php";
+		/**
+		 * returns id and name of acoounts current user is involved with
+		 * @param sLoadingText
+		 * @param fnSuccessCallback
+		 */
+		oWebservice.prototype.getUserAccounts = function(sLoadingText, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "get",
+				"sFunctionName": "getUserAccounts"
+			};
 
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback);
+			this.execute(sLoadingText, oTarget, fnSuccessCallback);
 		};
 
-		oWebservice.prototype.setNewUser = function(sLoadingText, fnSuccessCallback, fnErrorCallback, oParameters) {
-			let sUrlPath = "http://track.bplaced.net/php/setData/setNewUser.php";
+		/**
+		 * returns bookings for specified accounts and period
+		 * @param sLoadingText
+		 * @param aAccountIds
+		 * @param sStartDate
+		 * @param sEndDate
+		 * @param fnSuccessCallback
+		 */
+		oWebservice.prototype.getBookings = function (sLoadingText, aAccountIds, sStartDate, sEndDate, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "get",
+				"sFunctionName": "getBookings"
+			};
 
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, oParameters);
-		};
-
-		oWebservice.prototype.deleteUser = function(sLoadingText, fnSuccessCallback, fnErrorCallback, oParameters) {
-			let sUrlPath = "http://track.bplaced.net/php/setData/deleteUser.php";
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, oParameters);
-		};
-
-		oWebservice.prototype.fuckedUp = function(sLoadingText, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/api/get.php?sFunctionName=getBookings";
-			sUrlPath = encodeURI(sUrlPath);
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, {
-				"sStartDate": "2017-01-01 00:00:00",
-				"sEndDate": "2017-05-03 00:00:00"
-			});
-		};
-
-		oWebservice.prototype.getBookings = function(sLoadingText, sStartDate, sEndDate, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/api/get.php?sFunctionName=getBookings";
-			sUrlPath = encodeURI(sUrlPath);
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, {
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"aAccounts": aAccountIds,
 				"sStartDate": sStartDate,
 				"sEndDate": sEndDate
 			});
 		};
 
-		oWebservice.prototype.setBooking = function(sLoadingText, sAccountId, sBookingCategory, iBookingType, sBookingDate, iBookingFrequency, sBookingTitle, fBookingValue, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/api/set.php?sFunctionName=setBooking";
-			sUrlPath = encodeURI(sUrlPath);
+		/**
+		 * saves booking and returns id
+		 * @param sLoadingText
+		 * @param iAccountId
+		 * @param iMainCategoryId
+		 * @param iSubCategoryId
+		 * @param sBookingDate
+		 * @param sBookingDescription
+		 * @param iBookingFrequency
+		 * @param iBookingType
+		 * @param fBookingValue
+		 * @param fnSuccessCallback
+		 */
+		oWebservice.prototype.addBooking = function(sLoadingText, iAccountId, iMainCategoryId, iSubCategoryId, sBookingDate, sBookingDescription, iBookingFrequency, iBookingType, fBookingValue, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "set",
+				"sFunctionName": "addBooking"
+			};
 
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, {
-				"sAccountId": sAccountId,
-				"sBookingCategory": sBookingCategory,
-				"iBookingType": iBookingType,
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"iAccountId": iAccountId,
+				"iMainCategoryId": iMainCategoryId,
+				"iSubCategoryId": iSubCategoryId,
 				"sBookingDate": sBookingDate,
+				"sBookingDescription": sBookingDescription,
 				"iBookingFrequency": iBookingFrequency,
-				"sBookingTitle": sBookingTitle,
-				"fBookingValue": fBookingValue
-			});
-		};
-
-		oWebservice.prototype.updateBooking = function(sLoadingText, sBookingId, sBookingCategory, iBookingType, iBookingFrequency, sBookingTitle, fBookingValue, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/api/set.php?sFunctionName=updateBooking";
-			sUrlPath = encodeURI(sUrlPath);
-
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, {
-				"sBookingId": sBookingId,
-				"sBookingCategory": sBookingCategory,
 				"iBookingType": iBookingType,
-				"iBookingFrequency": iBookingFrequency,
-				"sBookingTitle": sBookingTitle,
 				"fBookingValue": fBookingValue
 			});
 		};
 
-		oWebservice.prototype.deleteBooking = function(sLoadingText, sBookingId, fnSuccessCallback) {
-			let sUrlPath = "http://track.bplaced.net/api/delete.php?sFunctionName=deleteBooking";
-			sUrlPath = encodeURI(sUrlPath);
+		oWebservice.prototype.getCategories = function (sLoadingText, aAccounts, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "get",
+				"sFunctionName": "getCategories"
+			};
 
-			this.execute(sLoadingText, sUrlPath, fnSuccessCallback, undefined, {
-				bUsePost: true
-			}, {
-				"sBookingId": sBookingId
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"aAccounts": aAccounts
 			});
 		};
 
-        return oWebservice;
-    }
+		return oWebservice;
+	}
 );

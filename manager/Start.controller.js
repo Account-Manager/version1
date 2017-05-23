@@ -13,7 +13,7 @@
 			let sStartDate = viewUtils.formatDateToBackendString(oStartDate);
 			let sEndDate = viewUtils.formatDateToBackendString(oEndDate);
 
-			oWebservice1.getUserAccounts("Loading accounts...", function(oResponse) {
+			oWebservice.getUserAccounts("Loading accounts...", function(oResponse) {
 				if (oResponse && !oResponse.bError) {
 					let aAccounts = [];
 					oResponse.aAccounts.forEach(function(oItem) {
@@ -24,7 +24,7 @@
 
 					oView.oAccountsPanel.setHeaderText(`Accounts (${aAccounts.length})`);
 
-					oWebservice1.getBookings("Loading booking data", aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
+					oWebservice.getBookings("Loading booking data", aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
 						let oBookings = oResponseBooking.aBookings;
 						let oBookingData = new sap.ui.model.json.JSONModel();
 						oBookingData.setData(oBookings);
@@ -32,7 +32,7 @@
 						oController.handleResetFilters();
 					});
 
-					oWebservice1.getCategories("Loading categories...", aAccounts, function(oResponseCategories) {
+					oWebservice.getCategories("Loading categories...", aAccounts, function(oResponseCategories) {
 						if (oResponseCategories && !oResponseCategories.bError) {
 							let oCategories = oResponseCategories.aMainCategories;
 							oCategories.forEach(function(oItem) {
