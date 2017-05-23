@@ -50,7 +50,7 @@
 			oView.oAccountsPanel = new sap.m.Panel({
 				headerText: "Accounts",
 				expandable: true,
-				expanded: false,
+				expanded: true,
 				content: [ oHeaderInfo ]
 			});
 

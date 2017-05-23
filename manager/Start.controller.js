@@ -218,7 +218,7 @@
 		getAccountsTableColumnKeys: function() {
 			return [
 				"sAccountName",
-				"sAccountValue"
+				"fAccountBalance"
 			];
 		},
 
@@ -235,6 +235,18 @@
 								path: sKey
 							}
 						}));
+						break;
+					case "fAccountBalance":
+						oTemplate.push(new sap.m.Text({
+							wrapping: false,
+							maxlines: 1,
+							text: {
+								path: sKey
+							}
+						}));
+						break;
+					default:
+						break;
 				}
 			});
 			return oTemplate;
