@@ -107,6 +107,28 @@
 				value: oItem.iBookingType,
 				tooltip: "Buchungstyp"
 			});
+
+			let btnExpense = new sap.m.SegmentedButtonItem({
+				text: "Expense",
+				key: "0"
+			});
+			let btnIncome = new sap.m.SegmentedButtonItem({
+				text: "Income",
+				key: "1"
+			});
+			let btnTransfer = new sap.m.SegmentedButtonItem({
+				text: "Transfer",
+				key: "2"
+			});
+			let btnBookingType = new sap.m.SegmentedButton({
+				items: [
+					btnExpense,
+					btnIncome,
+					btnTransfer
+				],
+				width: "100%"
+			});
+
 			let inpBookingFrequency = new sap.m.Input({
 				value: oItem.iBookingFrequency,
 				tooltip: "Häufigkeit"
@@ -166,7 +188,8 @@
 						width: "100%",
 						direction: sap.m.FlexDirection.Column,
 						items: [
-							inpBookingType,
+							// inpBookingType,
+							btnBookingType,
 							inpBookingFrequency,
 							inpBookingCategory,
 							inpBookingTitle,
