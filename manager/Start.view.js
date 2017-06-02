@@ -47,6 +47,7 @@
             });
 
             // accountinfo moved to panel over booking table
+			// TODO: maybe change to Object Header (expanding: getCondensed())
 			oView.oAccountsPanel = new sap.m.Panel({
 				headerText: "Accounts",
 				expandable: true,
@@ -601,7 +602,7 @@
 						icon: "sap-icon://key-user-settings",
 						press: function(oEvent) {
 							oView.oAdminPanel.open();
-							oView.btnCloseAdminPanel.focus();
+							// oView.btnCloseAdminPanel.focus();
 							oController.getAdminPanelOverview();
 						}
 					}),

@@ -466,7 +466,71 @@
 				stretch: !!sap.ui.Device.system.phone
 			});
 
-			oView.oUserTable = new sap.m.Table({
+			/*
+				TabBar
+			 */
+			oView.oAdminTabBar = new sap.m.IconTabBar({
+				width: "100%",
+				stretchContentHeight: true
+				// items added afterwars
+			});
+
+			oView.oAdminUserTab = new sap.m.IconTabFilter({
+				icon: "sap-icon://employee",
+				key: "user"
+				// content added afterwards
+			});
+
+			oView.oAdminUserToolBar = new sap.m.OverflowToolbar({});
+
+			oView.oAdminUserAdd = new sap.m.OverflowToolbarButton({
+				icon: "sap-icon://add",
+				text: "Add",
+				press: function(oEvent) {
+					oController.showAdminUserDialog();
+				}
+			});
+
+			oView.oAdminUserUpdate = new sap.m.OverflowToolbarButton({
+				icon: "sap-icon://customize",
+				text: "Update",
+				enabled: false,
+				press: function(oEvent) {
+					let oItem = viewUtils.getSelectedItemFromTable(oView.oAdminUserTable);
+					if (oItem) {
+						oController.showAdminUserDialog(oItem);
+					}
+				}
+			});
+
+			oView.oAdminUserDelete = new sap.m.OverflowToolbarButton({
+				icon: "sap-icon://delete",
+				text: "Delete",
+				enabled: false,
+				press: function(oEvent) {
+					let oItem = viewUtils.getSelectedItemFromTable(oView.oAdminUserTable);
+					if (oItem) {
+						oWebservice.deleteAdminUser("Deleting User...", oItem.iUserId, function(oResponse) {
+							if (oResponse && !oResponse.bError) {
+								viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
+								sap.m.MessageToast.show("Deleting User successfull");
+								oView.oAdminUserUpdate.setEnabled(false);
+								oView.oAdminUserDelete.setEnabled(false);
+								oView.oAdminUserTab.setCount(parseInt(oView.oAdminUserTab.getCount(), 10)-1);
+							} else {
+								sap.m.MessageToast.show("Error trying to delete User");
+							}
+						});
+					}
+				}
+			});
+
+			oView.oAdminUserToolBar.addContent(new sap.m.ToolbarSpacer({}));
+			oView.oAdminUserToolBar.addContent(oView.oAdminUserAdd);
+			oView.oAdminUserToolBar.addContent(oView.oAdminUserUpdate);
+			oView.oAdminUserToolBar.addContent(oView.oAdminUserDelete);
+
+			oView.oAdminUserTable = new sap.m.Table({
 				columns: [
 					new sap.m.Column({
 						header: new sap.m.Label({
@@ -485,23 +549,24 @@
 					}),
 					new sap.m.Column({
 						header: new sap.m.Label({
-							text: "Login Name"
+							text: "Login-Name"
 						})
 					})
 				],
 				mode: sap.m.ListMode.SingleSelectMaster,
 				selectionChange: function(oEvent) {
-					console.log(oView.oUserTable.indexOfItem(oView.oUserTable.getSelectedItem()));
-					let oItem = oView.oUserTable.getSelectedItem();
+					let oItem = oView.oAdminUserTable.getSelectedItem();
 					if (oItem) {
-						oView.btnUserDelete.setVisible(true);
+						oView.oAdminUserUpdate.setEnabled(true);
+						oView.oAdminUserDelete.setEnabled(true);
 					}
 				}
 			}).bindAggregation("items", "/", new sap.m.ColumnListItem({
+				vAlign: sap.ui.core.VerticalAlign.Middle,
 				cells: [
 					new sap.m.Text({
 						text: {
-							path: "sUserId"
+							path: "iUserId"
 						}
 					}),
 					new sap.m.Text({
@@ -519,173 +584,469 @@
 							path: "sLoginName"
 						}
 					})
-				],
-				vAlign: sap.ui.core.VerticalAlign.Middle
+				]
 			}));
 
-			oView.oUserTab = new sap.m.IconTabFilter({
-				icon: "sap-icon://employee",
-				key: "user",
-				content: [
-					oView.oUserTable
-				]
-			});
-			oView.oAccountsTab = new sap.m.IconTabFilter({
-				icon: "sap-icon://contacts",
-				key: "accounts"
-			});
-			oView.oBookingsTab = new sap.m.IconTabFilter({
-				icon: "sap-icon://bar-code",
-				key: "bookings"
-			});
-			oView.oIconTabBar = new sap.m.IconTabBar({
-				width: "100%",
-				stretchContentHeight: true,
-				items: [
-					oView.oUserTab,
-					oView.oAccountsTab,
-					oView.oBookingsTab
-				]
-			}).attachSelect(function(oEvent) {
-				let sKey = oEvent.getParameters().key;
-				oView.oUserTable.removeSelections();
-				oView.btnUserAdd.setVisible(false);
-				oView.btnUserDelete.setVisible(false);
-				oView.btnAccountAdd.setVisible(false);
-				oView.btnBookingAdd.setVisible(false);
-				switch (sKey) {
-					case "user":
-						oView.btnUserAdd.setVisible(true);
-						break;
-					case "accounts":
-						oView.btnAccountAdd.setVisible(true);
-						break;
-					case "bookings":
-						oView.btnBookingAdd.setVisible(true);
-						break;
-					default:
-						break;
-				}
-			});
+			oView.oAdminUserTab.addContent(oView.oAdminUserToolBar);
+			oView.oAdminUserTab.addContent(oView.oAdminUserTable);
 
-			oView.btnUserAdd = new sap.m.Button({
-				icon: "sap-icon://add",
-				text: "Add User",
-				visible: true,
-				press: function (oEvent) {
-					oController.showUserAddDialog(oEvent);
-				}
-			});
-			oView.btnUserDelete = new sap.m.Button({
-				icon: "sap-icon://decline",
-				text: "Delete User",
-				visible: false,
-				press: function (oEvent) {
-					// oController.showUserAddDialog(oEvent);
-					let oItem = viewUtils.getSelectedItemFromTable(oView.oUserTable);
-					oWebservice.deleteUser("Deleting User...", function(oResponse) {
-						if (oResponse && oResponse.bDeleteSuccess) {
-							sap.m.MessageToast.show("User deleted successfully.", {});
-							oView.btnUserDelete.setVisible(false);
-							oController.getAdminPanelOverview();
-						}
-					}, function() {
-						let oDialog = new sap.m.Dialog({
-							title: oBundle.getText("std.error.occurred"),
-							type: "Message",
-							state: "Error",
-							content: new sap.m.Text({
-								text: "Beim Löschen der Daten ist ein Fehler aufgetreten"
-							}),
-							beginButton: new sap.m.Button({
-								text: oBundle.getText("std.ok"),
-								press: function() {
-									oDialog.close();
-								}
-							}),
-							afterClose: function() {
-								oDialog.destroy();
-							}
-						});
-						oDialog.open();
-					}, {
-						"sUserId": oItem.sUserId
-					});
-				}
-			});
-			oView.btnAccountAdd = new sap.m.Button({
-				icon: "sap-icon://add",
-				text: "Add Account",
-				visible: false,
-				press: function (oEvent) {
+			oView.oAdminTabBar.addItem(oView.oAdminUserTab);
 
-				}
-			});
-			oView.btnBookingAdd = new sap.m.Button({
-				icon: "sap-icon://add",
-				text: "Add Booking",
-				visible: false,
-				press: function (oEvent) {
-					let oBookingDate = new Date();
-					let sBookingDate = viewUtils.formatDateToBackendString(oBookingDate);
-
-					oWebservice.setBooking("Generating random Booking...", 1, 1, 1, sBookingDate, 1, "Monatsgehalt", 714.12, function(oResponse) {
-						console.log(oResponse);
-						if (oResponse && !oResponse.bError) {
-							sap.m.MessageToast.show("Booking saved successfully", {});
-						} else {
-							sap.m.MessageToast.show("Error saving booking", {});
-						}
-					});
-
-					// let oStartDate = new Date("2016", "01", "01"), oEndDate = new Date();
-					// let sStartDate = oStartDate.toJSON(), sEndDate = oEndDate.toJSON();
-					// oWebservice.getBookings("Loading Bookings...", function(oResponse) {
-					// 	console.log(oResponse);
-					// }, sStartDate, sEndDate);
-				}
-			});
-			oView.btnCloseAdminPanel = new sap.m.Button({
+			/*
+				Buttons
+			 */
+			oView.btnAdminClose = new sap.m.Button({
 				text: "Close",
 				icon: "sap-icon://sys-cancel-2",
 				press: function(oEvent) {
 					oView.oAdminPanel.close();
+					oView.oAdminUserUpdate.setEnabled(false);
+					oView.oAdminUserDelete.setEnabled(false);
 				}
 			});
-			oAdminPanel.addButton(oView.btnUserAdd);
-			oAdminPanel.addButton(oView.btnUserDelete);
-			oAdminPanel.addButton(oView.btnAccountAdd);
-			oAdminPanel.addButton(oView.btnBookingAdd);
-			oAdminPanel.addButton(oView.btnCloseAdminPanel);
-			// oAdminPanel.addButton(new sap.m.Button({
+
+			oAdminPanel.addButton(oView.btnAdminClose);
+
+			// oView.btnCloseAdminPanel = new sap.m.Button({
 			// 	text: "Close",
 			// 	icon: "sap-icon://sys-cancel-2",
 			// 	press: function(oEvent) {
 			// 		oView.oAdminPanel.close();
 			// 	}
-			// }));
+			// });
 
-			oAdminPanel.addContent(oView.oIconTabBar);
+			// oView.oUserTab = new sap.m.IconTabFilter({
+			// 	icon: "sap-icon://employee",
+			// 	key: "user",
+			// 	content: [
+			// 		oView.oUserTable
+			// 	]
+			// });
+
+			// oView.oIconTabBar = new sap.m.IconTabBar({
+			// 	width: "100%",
+			// 	stretchContentHeight: true,
+			// 	items: [
+			// 		oView.oUserTab,
+			// 		oView.oAccountsTab,
+			// 		oView.oBookingsTab
+			// 	]
+			// }).attachSelect(function(oEvent) {
+			// 	let sKey = oEvent.getParameters().key;
+			// 	oView.oUserTable.removeSelections();
+			// 	oView.btnUserAdd.setVisible(false);
+			// 	oView.btnUserDelete.setVisible(false);
+			// 	oView.btnAccountAdd.setVisible(false);
+			// 	oView.btnBookingAdd.setVisible(false);
+			// 	switch (sKey) {
+			// 		case "user":
+			// 			oView.btnUserAdd.setVisible(true);
+			// 			break;
+			// 		case "accounts":
+			// 			oView.btnAccountAdd.setVisible(true);
+			// 			break;
+			// 		case "bookings":
+			// 			oView.btnBookingAdd.setVisible(true);
+			// 			break;
+			// 		default:
+			// 			break;
+			// 	}
+			// });
+
+			// oView.oUserTable = new sap.m.Table({
+			// 	columns: [
+			// 		new sap.m.Column({
+			// 			header: new sap.m.Label({
+			// 				text: "ID"
+			// 			})
+			// 		}),
+			// 		new sap.m.Column({
+			// 			header: new sap.m.Label({
+			// 				text: "Firstname"
+			// 			})
+			// 		}),
+			// 		new sap.m.Column({
+			// 			header: new sap.m.Label({
+			// 				text: "Lastname"
+			// 			}),
+			// 		}),
+			// 		new sap.m.Column({
+			// 			header: new sap.m.Label({
+			// 				text: "Login Name"
+			// 			})
+			// 		})
+			// 	],
+			// 	mode: sap.m.ListMode.SingleSelectMaster,
+			// 	selectionChange: function(oEvent) {
+			// 		console.log(oView.oUserTable.indexOfItem(oView.oUserTable.getSelectedItem()));
+			// 		let oItem = oView.oUserTable.getSelectedItem();
+			// 		if (oItem) {
+			// 			oView.btnUserDelete.setVisible(true);
+			// 		}
+			// 	}
+			// }).bindAggregation("items", "/", new sap.m.ColumnListItem({
+			// 	cells: [
+			// 		new sap.m.Text({
+			// 			text: {
+			// 				path: "sUserId"
+			// 			}
+			// 		}),
+			// 		new sap.m.Text({
+			// 			text: {
+			// 				path: "sFirstName"
+			// 			}
+			// 		}),
+			// 		new sap.m.Text({
+			// 			text: {
+			// 				path: "sLastName"
+			// 			}
+			// 		}),
+			// 		new sap.m.Text({
+			// 			text: {
+			// 				path: "sLoginName"
+			// 			}
+			// 		})
+			// 	],
+			// 	vAlign: sap.ui.core.VerticalAlign.Middle
+			// }));
+			//
+			// oView.oUserTab = new sap.m.IconTabFilter({
+			// 	icon: "sap-icon://employee",
+			// 	key: "user",
+			// 	content: [
+			// 		oView.oUserTable
+			// 	]
+			// });
+			// oView.oAccountsTab = new sap.m.IconTabFilter({
+			// 	icon: "sap-icon://contacts",
+			// 	key: "accounts"
+			// });
+			// oView.oBookingsTab = new sap.m.IconTabFilter({
+			// 	icon: "sap-icon://bar-code",
+			// 	key: "bookings"
+			// });
+			// oView.oIconTabBar = new sap.m.IconTabBar({
+			// 	width: "100%",
+			// 	stretchContentHeight: true,
+			// 	items: [
+			// 		oView.oUserTab,
+			// 		oView.oAccountsTab,
+			// 		oView.oBookingsTab
+			// 	]
+			// }).attachSelect(function(oEvent) {
+			// 	let sKey = oEvent.getParameters().key;
+			// 	oView.oUserTable.removeSelections();
+			// 	oView.btnUserAdd.setVisible(false);
+			// 	oView.btnUserDelete.setVisible(false);
+			// 	oView.btnAccountAdd.setVisible(false);
+			// 	oView.btnBookingAdd.setVisible(false);
+			// 	switch (sKey) {
+			// 		case "user":
+			// 			oView.btnUserAdd.setVisible(true);
+			// 			break;
+			// 		case "accounts":
+			// 			oView.btnAccountAdd.setVisible(true);
+			// 			break;
+			// 		case "bookings":
+			// 			oView.btnBookingAdd.setVisible(true);
+			// 			break;
+			// 		default:
+			// 			break;
+			// 	}
+			// });
+			//
+			// oView.btnUserAdd = new sap.m.Button({
+			// 	icon: "sap-icon://add",
+			// 	text: "Add User",
+			// 	visible: true,
+			// 	press: function (oEvent) {
+			// 		oController.showUserAddDialog(oEvent);
+			// 	}
+			// });
+			// oView.btnUserDelete = new sap.m.Button({
+			// 	icon: "sap-icon://decline",
+			// 	text: "Delete User",
+			// 	visible: false,
+			// 	press: function (oEvent) {
+			// 		// oController.showUserAddDialog(oEvent);
+			// 		let oItem = viewUtils.getSelectedItemFromTable(oView.oUserTable);
+			// 		oWebservice.deleteUser("Deleting User...", function(oResponse) {
+			// 			if (oResponse && oResponse.bDeleteSuccess) {
+			// 				sap.m.MessageToast.show("User deleted successfully.", {});
+			// 				oView.btnUserDelete.setVisible(false);
+			// 				oController.getAdminPanelOverview();
+			// 			}
+			// 		}, function() {
+			// 			let oDialog = new sap.m.Dialog({
+			// 				title: oBundle.getText("std.error.occurred"),
+			// 				type: "Message",
+			// 				state: "Error",
+			// 				content: new sap.m.Text({
+			// 					text: "Beim Löschen der Daten ist ein Fehler aufgetreten"
+			// 				}),
+			// 				beginButton: new sap.m.Button({
+			// 					text: oBundle.getText("std.ok"),
+			// 					press: function() {
+			// 						oDialog.close();
+			// 					}
+			// 				}),
+			// 				afterClose: function() {
+			// 					oDialog.destroy();
+			// 				}
+			// 			});
+			// 			oDialog.open();
+			// 		}, {
+			// 			"sUserId": oItem.sUserId
+			// 		});
+			// 	}
+			// });
+			// oView.btnAccountAdd = new sap.m.Button({
+			// 	icon: "sap-icon://add",
+			// 	text: "Add Account",
+			// 	visible: false,
+			// 	press: function (oEvent) {
+			//
+			// 	}
+			// });
+			// oView.btnBookingAdd = new sap.m.Button({
+			// 	icon: "sap-icon://add",
+			// 	text: "Add Booking",
+			// 	visible: false,
+			// 	press: function (oEvent) {
+			// 		let oBookingDate = new Date();
+			// 		let sBookingDate = viewUtils.formatDateToBackendString(oBookingDate);
+			//
+			// 		oWebservice.setBooking("Generating random Booking...", 1, 1, 1, sBookingDate, 1, "Monatsgehalt", 714.12, function(oResponse) {
+			// 			console.log(oResponse);
+			// 			if (oResponse && !oResponse.bError) {
+			// 				sap.m.MessageToast.show("Booking saved successfully", {});
+			// 			} else {
+			// 				sap.m.MessageToast.show("Error saving booking", {});
+			// 			}
+			// 		});
+			//
+			// 		// let oStartDate = new Date("2016", "01", "01"), oEndDate = new Date();
+			// 		// let sStartDate = oStartDate.toJSON(), sEndDate = oEndDate.toJSON();
+			// 		// oWebservice.getBookings("Loading Bookings...", function(oResponse) {
+			// 		// 	console.log(oResponse);
+			// 		// }, sStartDate, sEndDate);
+			// 	}
+			// });
+
+			// oAdminPanel.addButton(oView.btnUserAdd);
+			// oAdminPanel.addButton(oView.btnUserDelete);
+			// oAdminPanel.addButton(oView.btnAccountAdd);
+			// oAdminPanel.addButton(oView.btnBookingAdd);
+			// oAdminPanel.addButton(oView.btnCloseAdminPanel);
+			// // oAdminPanel.addButton(new sap.m.Button({
+			// // 	text: "Close",
+			// // 	icon: "sap-icon://sys-cancel-2",
+			// // 	press: function(oEvent) {
+			// // 		oView.oAdminPanel.close();
+			// // 	}
+			// // }));
+
+			oAdminPanel.addContent(oView.oAdminTabBar);
 
 			return oAdminPanel;
+		},
+
+		showAdminUserDialog: function(oItem) {
+			const oController = this;
+			const oView = oController.getView();
+
+			let oAdminUserDialog = new sap.m.Dialog({
+				title: oItem ? "Update User" : "Add User",
+				contentWidth: "640px", // as wide as shell
+				stretch: !!sap.ui.Device.system.phone
+			});
+
+			let fnAdminUserCheck = function() {
+				let sFirstName = inpFirstName.getValue();
+				let sLastName = inpLastName.getValue();
+				let sLoginName = inpLoginName.getValue();
+
+				if (sFirstName !== "" && sLastName !== "" && sLoginName !== "") {
+					btnAdminUserSave.setEnabled(true);
+				} else {
+					btnAdminUserSave.setEnabled(false);
+				}
+			};
+
+			let inpFirstName = new sap.m.Input({
+				value: oItem ? oItem.sFirstName : "",
+				liveChange: function(oEvent) {
+					fnAdminUserCheck();
+				}
+			});
+			let oFirstNameElement = new sap.ui.layout.form.FormElement({
+				label: "First Name",
+				fields: [ inpFirstName ]
+			});
+
+			let inpLastName = new sap.m.Input({
+				value: oItem ? oItem.sLastName : "",
+				liveChange: function(oEvent) {
+					fnAdminUserCheck();
+				}
+			});
+			let oLastNameElement = new sap.ui.layout.form.FormElement({
+				label: "Last Name",
+				fields: [ inpLastName ]
+			});
+
+			let inpLoginName = new sap.m.Input({
+				value: oItem ? oItem.sLoginName : "",
+				liveChange: function(oEvent) {
+					fnAdminUserCheck();
+				}
+			});
+			let oLoginNameElement = new sap.ui.layout.form.FormElement({
+				label: "Login-Name",
+				fields: [ inpLoginName ]
+			});
+
+			let oAdminUserContainer = new sap.ui.layout.form.FormContainer({
+				expanded: true,
+				formElements: [
+					oFirstNameElement,
+					oLastNameElement,
+					oLoginNameElement
+				]
+			});
+
+			let oAdminUserForm = new sap.ui.layout.form.Form({
+				editable: true,
+				formContainers: [ oAdminUserContainer ],
+				height: "100%",
+				layout: new sap.ui.layout.form.ResponsiveGridLayout({
+					breakpointXL: 1000,
+					breakpointL: 700,
+					breakpointM: 300
+				})
+			}).addStyleClass("marginMinus1Rem");
+
+			let btnAdminUserSave = new sap.m.Button({
+				text: "Save",
+				icon: "sap-icon://save",
+				enabled: false,
+				press: function(oEvent) {
+					let sFirstName = inpFirstName.getValue();
+					let sLastName = inpLastName.getValue();
+					let sLoginName = inpLoginName.getValue();
+					let iUserId;
+					if (oItem) {
+						iUserId = oItem.iUserId;
+					}
+					// let iUserId = oItem.iUserId || undefined;
+
+					if (sFirstName !== "" && sLastName !== "" && sLoginName !== "") {
+						oWebservice.setAdminUser("Saving User...", iUserId, sFirstName, sLastName, sLoginName, function(oResponse) {
+							if (oResponse && !oResponse.bError) {
+								sap.m.MessageToast.show(`Saving User successfull`);
+
+								if (!oItem) {
+									let oTableData = oView.oAdminUserTable.getModel().getData();
+									let oNewItem = {};
+									oNewItem["sFirstName"] = sFirstName;
+									oNewItem["sLastName"] = sLastName;
+									oNewItem["sLoginName"] = sLoginName;
+									oNewItem["iUserId"] = oResponse.iUserId;
+
+									oTableData.push(oNewItem);
+
+									let oNewData = new sap.ui.model.json.JSONModel();
+									oNewData.setData(oTableData);
+									oView.oAdminUserTable.setModel(oNewData);
+
+									oAdminUserDialog.close();
+								} else {
+									viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
+									let oTableData = oView.oAdminUserTable.getModel().getData();
+									let oNewItem = {};
+									oNewItem["sFirstName"] = sFirstName;
+									oNewItem["sLastName"] = sLastName;
+									oNewItem["sLoginName"] = sLoginName;
+									oNewItem["iUserId"] = oItem.iUserId;
+
+									oTableData.push(oNewItem);
+
+									let oNewData = new sap.ui.model.json.JSONModel();
+									oNewData.setData(oTableData);
+									oView.oAdminUserTable.setModel(oNewData);
+
+									oAdminUserDialog.close();
+								}
+
+								oView.oAdminUserTab.setCount(parseInt(oView.oAdminUserTab.getCount(), 10)+1);
+							} else {
+								sap.m.MessageToast.show(`Error saving User. Please try again`);
+							}
+						});
+					}
+				}
+			});
+
+			let btnAdminUserClose = new sap.m.Button({
+				text: "Close",
+				icon: "sap-icon://sys-cancel-2",
+				press: function(oEvent) {
+					oAdminUserDialog.close();
+					oAdminUserDialog.destroy();
+				}
+			});
+
+			oAdminUserDialog.addButton(btnAdminUserSave);
+			oAdminUserDialog.addButton(btnAdminUserClose);
+			oAdminUserDialog.addContent(oAdminUserForm);
+
+			oAdminUserDialog.open();
 		},
 
 		getAdminPanelOverview: function() {
 			const oContoller = this;
 			const oView = oContoller.getView();
 
-			oWebservice.getAdminPanelOverview("Loading overview data...", function(oResponse) {
+			oWebservice.getAdminUsers("Loading users...", function(oResponse) {
 				if (oResponse && !oResponse.bError) {
-					oView.oUserTab.setCount(oResponse.aCounts[0].sUserCount);
-					oView.oAccountsTab.setCount(oResponse.aCounts[0].sAccountsCount);
-					oView.oBookingsTab.setCount(oResponse.aCounts[0].sBookingsCount);
-					oWebservice.getUserData("Loading User informations...", function(oUserResponse) {
-						let oUserModel = new sap.ui.model.json.JSONModel();
-						oUserModel.setData(oUserResponse);
-						oView.oUserTable.setModel(oUserModel);
-					});
+					let oUserModel = new sap.ui.model.json.JSONModel();
+					oUserModel.setData(oResponse.aUser);
+					oView.oAdminUserTable.setModel(oUserModel);
+					oView.oAdminUserTab.setCount(oResponse.aUser.length);
+				} else {
+					sap.m.MessageToast.show("Unable to load data");
 				}
 			});
+
+			// oWebservice.admin_getUsers("Loading user data...", function(oResponse) {
+			// 	if (oResponse && !oResponse.bError) {
+			// 		// oView.oUserTab.setCount(oResponse.aCounts[0].sUserCount);
+			// 		// oView.oAccountsTab.setCount(oResponse.aCounts[0].sAccountsCount);
+			// 		// oView.oBookingsTab.setCount(oResponse.aCounts[0].sBookingsCount);
+			// 		// oWebservice.getUserData("Loading User informations...", function(oUserResponse) {
+			// 		// 	let oUserModel = new sap.ui.model.json.JSONModel();
+			// 		// 	oUserModel.setData(oUserResponse);
+			// 		// 	oView.oUserTable.setModel(oUserModel);
+			// 		// });
+			//
+			// 		let oUserModel = new sap.ui.model.json.JSONModel();
+			// 		oUserModel.setData(oResponse);
+			// 		oView.oUserTable.setModel(oUserModel);
+			// 	}
+			// });
+
+			// oWebservice.getAdminPanelOverview("Loading overview data...", function(oResponse) {
+			// 	if (oResponse && !oResponse.bError) {
+			// 		oView.oUserTab.setCount(oResponse.aCounts[0].sUserCount);
+			// 		oView.oAccountsTab.setCount(oResponse.aCounts[0].sAccountsCount);
+			// 		oView.oBookingsTab.setCount(oResponse.aCounts[0].sBookingsCount);
+			// 		oWebservice.getUserData("Loading User informations...", function(oUserResponse) {
+			// 			let oUserModel = new sap.ui.model.json.JSONModel();
+			// 			oUserModel.setData(oUserResponse);
+			// 			oView.oUserTable.setModel(oUserModel);
+			// 		});
+			// 	}
+			// });
 		},
 
 		showBookingAddDialog: function(oEvent) {

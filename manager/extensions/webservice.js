@@ -197,6 +197,43 @@ sap.ui.define(["jquery.sap.global"],
 			});
 		};
 
+		oWebservice.prototype.getAdminUsers = function(sLoadingText, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "get",
+				"sFunctionName": "getAdminUsers"
+			};
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback);
+		};
+
+		oWebservice.prototype.setAdminUser = function(sLoadingText, iUserId, sFirstName, sLastName, sLoginName, fnSuccessCallback){
+			let oTarget = {
+				"sAction": "set",
+				"sFunctionName": "setAdminUser"
+			};
+
+			let oOptions = {};
+			oOptions["sFirstName"] = sFirstName;
+			oOptions["sLastName"] = sLastName;
+			oOptions["sLoginName"] = sLoginName;
+			if (iUserId && iUserId !== 0) {
+				oOptions["iUserId"] = iUserId;
+			}
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, oOptions);
+		};
+
+		oWebservice.prototype.deleteAdminUser = function(sLoadingText, iUserId, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "delete",
+				"sFunctionName": "deleteAdminUser"
+			};
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"iUserId": iUserId
+			});
+		};
+
 		return oWebservice;
 	}
 );
