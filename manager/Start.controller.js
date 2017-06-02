@@ -959,6 +959,8 @@
 									oNewData.setData(oTableData);
 									oView.oAdminUserTable.setModel(oNewData);
 
+									oView.oAdminUserTab.setCount(parseInt(oView.oAdminUserTab.getCount(), 10)+1);
+
 									oAdminUserDialog.close();
 								} else {
 									viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
@@ -978,7 +980,8 @@
 									oAdminUserDialog.close();
 								}
 
-								oView.oAdminUserTab.setCount(parseInt(oView.oAdminUserTab.getCount(), 10)+1);
+								oView.oAdminUserUpdate.setEnabled(false);
+								oView.oAdminUserDelete.setEnabled(false);
 							} else {
 								sap.m.MessageToast.show(`Error saving User. Please try again`);
 							}
