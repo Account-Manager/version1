@@ -20,6 +20,10 @@
 						aAccounts.push(oItem.sAccountId);
 					});
 
+					if (oResponse.sSessionId && oResponse.sSessionId !== "") {
+						document.cookie = `PHPSESSID=${oResponse.sSessionId}`;
+					}
+
 					// TODO: check if aAccounts has items before execting following functions
 
 					oView.oAccountsPanel.setHeaderText(`Accounts (${aAccounts.length})`);
@@ -486,14 +490,16 @@
 			oView.oAdminUserAdd = new sap.m.OverflowToolbarButton({
 				icon: "sap-icon://add",
 				text: "Add",
+				tooltip: "Add",
 				press: function(oEvent) {
 					oController.showAdminUserDialog();
 				}
 			});
 
 			oView.oAdminUserUpdate = new sap.m.OverflowToolbarButton({
-				icon: "sap-icon://customize",
+				icon: "sap-icon://user-edit",
 				text: "Update",
+				tooltip: "Update",
 				enabled: false,
 				press: function(oEvent) {
 					let oItem = viewUtils.getSelectedItemFromTable(oView.oAdminUserTable);
@@ -506,19 +512,62 @@
 			oView.oAdminUserDelete = new sap.m.OverflowToolbarButton({
 				icon: "sap-icon://delete",
 				text: "Delete",
+				tooltip: "Delete",
 				enabled: false,
 				press: function(oEvent) {
 					let oItem = viewUtils.getSelectedItemFromTable(oView.oAdminUserTable);
 					if (oItem) {
-						oWebservice.deleteAdminUser("Deleting User...", oItem.iUserId, function(oResponse) {
-							if (oResponse && !oResponse.bError) {
-								viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
-								sap.m.MessageToast.show("Deleting User successfull");
-								oView.oAdminUserUpdate.setEnabled(false);
-								oView.oAdminUserDelete.setEnabled(false);
-								oView.oAdminUserTab.setCount(parseInt(oView.oAdminUserTab.getCount(), 10)-1);
-							} else {
-								sap.m.MessageToast.show("Error trying to delete User");
+						sap.m.MessageBox.confirm(`Do you really want to delete "${oItem.sFirstName} ${oItem.sLastName}"?`, {
+							icon: sap.m.MessageBox.Icon.WARNING,
+							title: "Really delete User?",
+							actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+							onClose: function(oAction) {
+								if (oAction == sap.m.MessageBox.Action.YES) {
+									oWebservice.deleteAdminUser("Deleting User...", oItem.iUserId, function(oResponse) {
+										if (oResponse && !oResponse.bError) {
+											viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
+											sap.m.MessageToast.show("Deleting User successfull");
+											oView.oAdminUserUpdate.setEnabled(false);
+											oView.oAdminUserDelete.setEnabled(false);
+											oView.oAdminUserSetActive.setEnabled(false);
+											oView.oAdminUserTab.setCount(parseInt(oView.oAdminUserTab.getCount(), 10)-1);
+										} else {
+											sap.m.MessageToast.show("Error trying to delete User");
+										}
+									});
+								}
+							}
+						});
+					}
+				}
+			});
+
+			oView.oAdminUserSetActive = new sap.m.OverflowToolbarButton({
+				icon: "sap-icon://citizen-connect",
+				text: "Set as active",
+				tooltip: "Set as active",
+				enabled: false,
+				press: function(oEvent) {
+					let oItem = viewUtils.getSelectedItemFromTable(oView.oAdminUserTable);
+					if (oItem) {
+						sap.m.MessageBox.confirm(`Set "${oItem.sFirstName} ${oItem.sLastName}" as active User?`, {
+							icon: sap.m.MessageBox.Icon.WARNING,
+							title: "Change active User",
+							actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+							onClose: function(oAction) {
+								if (oAction == sap.m.MessageBox.Action.YES) {
+									oWebservice.setAdminActiveUser("Changing active User...", oItem.iUserId, function(oResponse) {
+										if (oResponse && !oResponse.bError) {
+											sap.m.MessageToast.show("Changing User successfull");
+											oView.oAdminUserUpdate.setEnabled(false);
+											oView.oAdminUserDelete.setEnabled(false);
+											oView.oAdminUserSetActive.setEnabled(false);
+											location.reload();
+										} else {
+											sap.m.MessageToast.show("Error trying to change active User");
+										}
+									});
+								}
 							}
 						});
 					}
@@ -529,6 +578,7 @@
 			oView.oAdminUserToolBar.addContent(oView.oAdminUserAdd);
 			oView.oAdminUserToolBar.addContent(oView.oAdminUserUpdate);
 			oView.oAdminUserToolBar.addContent(oView.oAdminUserDelete);
+			oView.oAdminUserToolBar.addContent(oView.oAdminUserSetActive);
 
 			oView.oAdminUserTable = new sap.m.Table({
 				columns: [
@@ -555,10 +605,11 @@
 				],
 				mode: sap.m.ListMode.SingleSelectMaster,
 				selectionChange: function(oEvent) {
-					let oItem = oView.oAdminUserTable.getSelectedItem();
+					let oItem = viewUtils.getSelectedItemFromTable(oView.oAdminUserTable);
 					if (oItem) {
 						oView.oAdminUserUpdate.setEnabled(true);
 						oView.oAdminUserDelete.setEnabled(true);
+						oView.oAdminUserSetActive.setEnabled(!oItem.bIsActive);
 					}
 				}
 			}).bindAggregation("items", "/", new sap.m.ColumnListItem({
@@ -602,6 +653,7 @@
 					oView.oAdminPanel.close();
 					oView.oAdminUserUpdate.setEnabled(false);
 					oView.oAdminUserDelete.setEnabled(false);
+					oView.oAdminUserSetActive.setEnabled(false);
 				}
 			});
 
@@ -982,6 +1034,7 @@
 
 								oView.oAdminUserUpdate.setEnabled(false);
 								oView.oAdminUserDelete.setEnabled(false);
+								oView.oAdminUserSetActive.setEnabled(false);
 							} else {
 								sap.m.MessageToast.show(`Error saving User. Please try again`);
 							}

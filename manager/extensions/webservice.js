@@ -33,6 +33,9 @@ sap.ui.define(["jquery.sap.global"],
 			let bAsync = oOptions.bAsnyc || true; // execute AJAX call async by default
 
 			oParameters = oParameters || {};
+			if (viewUtils.getCookie("PHPSESSID") !== "") {
+				oParameters["PHPSESSID"] = viewUtils.getCookie("PHPSESSID");
+			}
 
 			let oModel = new sap.ui.model.json.JSONModel();
 
@@ -227,6 +230,17 @@ sap.ui.define(["jquery.sap.global"],
 			let oTarget = {
 				"sAction": "delete",
 				"sFunctionName": "deleteAdminUser"
+			};
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"iUserId": iUserId
+			});
+		};
+
+		oWebservice.prototype.setAdminActiveUser = function(sLoadingText, iUserId, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "set",
+				"sFunctionName": "setAdminActiveUser"
 			};
 
 			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {

@@ -119,4 +119,25 @@
 			return new Date(sBackendString.substring(0, 4), sBackendString.substring(5, 7) - 1, sBackendString.substring(8, 10), sBackendString.substring(11, 13), sBackendString.substring(14, 16), sBackendString.substring(17));
 		}
 	};
+
+	/**
+	 *
+	 * @param sCookieName
+	 * @returns cookie value or empty string
+	 */
+	manager.util.View.prototype.getCookie = function(sCookieName) {
+		let sName = sCookieName + "=";
+		let aDecodedCookie = decodeURIComponent(document.cookie);
+		let aSplitted = aDecodedCookie.split(";");
+		for (let i = 0; i < aSplitted.length; i++) {
+			let sCookie = aSplitted[i];
+			while (sCookie.charAt(0) === " ") {
+				sCookie = sCookie.substring(1);
+			}
+			if (sCookie.indexOf(sName) === 0) {
+				return sCookie.substring(sName.length, sCookie.length);
+			}
+		}
+		return "";
+	};
 })();
