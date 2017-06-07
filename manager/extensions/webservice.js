@@ -200,6 +200,30 @@ sap.ui.define(["jquery.sap.global"],
 			});
 		};
 
+		oWebservice.prototype.setBooking = function(sLoadingText, iBookingId, iAccountId, iMainCategoryId, iSubCategoryId, sBookingDate, sBookingDescription, iBookingFrequency, iBookingType, fBookingValue, fnSuccessCallback) {
+			let oTarget = {
+				"sAction": "set",
+				"sFunctionName": "setBooking"
+			};
+
+			let oBooking = {};
+			oBooking["iAccountId"] = iAccountId;
+			oBooking["iMainCategoryId"] = iMainCategoryId;
+			oBooking["iSubCategoryId"] = iSubCategoryId;
+			oBooking["sBookingDate"] = sBookingDate;
+			oBooking["sBookingDescription"] = sBookingDescription;
+			oBooking["iBookingFrequency"] = iBookingFrequency;
+			oBooking["iBookingType"] = iBookingType;
+			oBooking["fBookingValue"] = fBookingValue;
+			if (iBookingId && iBookingId != undefined) {
+				oBooking["iBookingId"] = iBookingId;
+			}
+
+			this.execute(sLoadingText, oTarget, fnSuccessCallback, undefined, {
+				"oBooking": oBooking
+			});
+		};
+
 		oWebservice.prototype.getAdminUsers = function(sLoadingText, fnSuccessCallback) {
 			let oTarget = {
 				"sAction": "get",

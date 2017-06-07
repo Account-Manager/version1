@@ -16,6 +16,20 @@
 	window.viewUtils = new manager.util.View();
 	window.storage = new manager.util.Storage();
 
+	// custom error handling
+	window.onerror = function(sMessage, sUrl, iLine, iCol, sError) {
+		sap.m.MessageBox.confirm(oBundle.getText("std.error.message"), {
+			icon: sap.m.MessageBox.Icon.ERROR,
+			title: oBundle.getText("std.error.title"),
+			actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+			onClose: function(oAction) {
+				if (oAction == sap.m.MessageBox.Action.YES) {
+
+				}
+			}
+		});
+	};
+
 	storage.setLanguage("de");  //TODO changeable from frontend
 
     window.oBundle = jQuery.sap.resources({
