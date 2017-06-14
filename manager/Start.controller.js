@@ -1073,19 +1073,21 @@
 
 									oAdminUserDialog.close();
 								} else {
-									viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
-									let oTableData = oView.oAdminUserTable.getModel().getData();
+									// viewUtils.deleteTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId);
+									// let oTableData = oView.oAdminUserTable.getModel().getData();
 									let oNewItem = {};
 									oNewItem["sFirstName"] = sFirstName;
 									oNewItem["sLastName"] = sLastName;
 									oNewItem["sLoginName"] = sLoginName;
 									oNewItem["iUserId"] = oItem.iUserId;
 
-									oTableData.push(oNewItem);
+									viewUtils.updateTableItemByKeyAndValue(oView.oAdminUserTable, "iUserId", oItem.iUserId, oNewItem);
 
-									let oNewData = new sap.ui.model.json.JSONModel();
-									oNewData.setData(oTableData);
-									oView.oAdminUserTable.setModel(oNewData);
+									// oTableData.push(oNewItem);
+									//
+									// let oNewData = new sap.ui.model.json.JSONModel();
+									// oNewData.setData(oTableData);
+									// oView.oAdminUserTable.setModel(oNewData);
 
 									oAdminUserDialog.close();
 								}

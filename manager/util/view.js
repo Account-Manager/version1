@@ -66,13 +66,6 @@
 				oNewData.setData(oTableData);
 				oTable.setModel(oNewData);
 			}
-
-			// let sIndexInModel = viewUtil.getIndexInTableModel(oTable);
-			// let oTableModelData = oTable.getModel().getData();
-			// oTableModelData.splice(sIndexInModel, 1);
-			// let oNewTableData = new sap.ui.model.json.JSONModel();
-			// oNewTableData.setData(oTableModelData);
-			// oTable.setModel(oNewTableData);
 		}
 	};
 
@@ -98,13 +91,6 @@
 				oNewData.setData(oTableData);
 				oTable.setModel(oNewData);
 			}
-
-			// let sIndexInModel = viewUtil.getIndexInTableModel(oTable);
-			// let oTableModelData = oTable.getModel().getData();
-			// oTableModelData.splice(sIndexInModel, 1);
-			// let oNewTableData = new sap.ui.model.json.JSONModel();
-			// oNewTableData.setData(oTableModelData);
-			// oTable.setModel(oNewTableData);
 		}
 	};
 
