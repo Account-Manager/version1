@@ -28,18 +28,22 @@
 
 					oView.oAccountsPanel.setHeaderText(`Accounts (${aAccounts.length})`);
 
-					oWebservice.getBookings("Loading booking data", aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
-						let oBookings = oResponseBooking.aBookings;
-						let oBookingData = new sap.ui.model.json.JSONModel();
-						oBookingData.setData(oBookings);
-						oView.oBookingTable.setModel(oBookingData);
-						oController.handleResetFilters();
-					});
-
 					oWebservice.getCategories("Loading categories...", aAccounts, function(oResponseCategories) {
 						if (oResponseCategories && !oResponseCategories.bError) {
-							let oCategories = oResponseCategories.aMainCategories;
-							oCategories.forEach(function(oItem) {
+							oWebservice.getBookings("Loading booking data", aAccounts, sStartDate, sEndDate, function(oResponseBooking) {
+								let oBookings = oResponseBooking.aBookings;
+								let oBookingData = new sap.ui.model.json.JSONModel();
+								oBookingData.setData(oBookings);
+								oView.oBookingTable.setModel(oBookingData);
+								oController.handleResetFilters();
+							});
+
+							let oMainCategories = oResponseCategories.aMainCategories;
+							let oSubCategories = oResponseCategories.aSubCategories;
+							oView.aMainCategories = oMainCategories;
+							oView.aSubCategories = oSubCategories;
+
+							oMainCategories.forEach(function(oItem) {
 								oView.oCategoryComboBox.addItem(new sap.ui.core.Item({
 									key: oItem.iMainCategoryId,
 									text: oItem.sMainCategoryName,
@@ -49,7 +53,7 @@
 									})
 								}));
 							});
-							oView.oCategoryComboBox.setSelectedKey(oCategories[0].iMainCategoryId);
+							oView.oCategoryComboBox.setSelectedKey(oMainCategories[0].iMainCategoryId);
 							sessionStorage.bookingCategory = oAccounts[0].sAccountId;
 						}
 					});
@@ -107,103 +111,136 @@
 
 			// TODO: rework, this is just a temporary version to test backend connection
 
-			let inpBookingType = new sap.m.Input({
-				value: oItem.iBookingType,
-				tooltip: "Buchungstyp"
-			});
+			console.log(oItem);
 
-			let btnExpense = new sap.m.SegmentedButtonItem({
-				text: "Expense",
-				key: "0"
-			});
-			let btnIncome = new sap.m.SegmentedButtonItem({
-				text: "Income",
-				key: "1"
-			});
-			let btnTransfer = new sap.m.SegmentedButtonItem({
-				text: "Transfer",
-				key: "2"
-			});
-			let btnBookingType = new sap.m.SegmentedButton({
-				items: [
-					btnExpense,
-					btnIncome,
-					btnTransfer
-				],
-				width: "100%"
-			});
+			if (oItem) {
+				let btnExpense = new sap.m.SegmentedButtonItem({
+					text: "Expense",
+					key: "0"
+				});
+				let btnIncome = new sap.m.SegmentedButtonItem({
+					text: "Income",
+					key: "1"
+				});
+				let btnTransferOut = new sap.m.SegmentedButtonItem({
+					text: "(-) Transfer",
+					key: "2"
+				});
+				let btnTransferIn = new sap.m.SegmentedButtonItem({
+					text: "(+) Transfer",
+					key: "2"
+				});
+				let btnBookingType = new sap.m.SegmentedButton({
+					items: [
+						btnExpense,
+						btnIncome,
+						btnTransferOut,
+						btnTransferIn
+					],
+					width: "100%"
+				});
+				btnBookingType.setSelectedKey(oItem.iBookingType);
 
-			let inpBookingFrequency = new sap.m.Input({
-				value: oItem.iBookingFrequency,
-				tooltip: "Häufigkeit"
-			});
-			let inpBookingCategory = new sap.m.Input({
-				value: oItem.sBookingCategory,
-				tooltip: "Kategorie"
-			});
-			let inpBookingTitle = new sap.m.Input({
-				value: oItem.sBookingDescription,
-				tooltip: "Beschreibung"
-			});
-			let inpBookingValue = new sap.m.Input({
-				value: oItem.fBookingValue,
-				tooltip: "Betrag"
-			});
+				let inpBookingFrequency = new sap.m.Input({
+					value: oItem.iBookingFrequency,
+					tooltip: "Häufigkeit"
+				});
+				let inpBookingDescription = new sap.m.Input({
+					value: oItem.sBookingDescription,
+					tooltip: "Beschreibung"
+				});
+				let inpBookingValue = new sap.m.Input({
+					value: oItem.fBookingValue,
+					tooltip: "Betrag"
+				});
 
-			let oEditPopup = new sap.m.Dialog({
-				title: "Edit Booking",
-				contentWidth: "20rem", // as wide as shell
-				showHeader: true,
-				resizable: false,
-				draggable: true,
-				stretch: !!sap.ui.Device.system.phone,
-				buttons: [
-					new sap.m.Button({
-						text: oBundle.getText("std.edit"),
-						icon: "sap-icon://save",
-						press: function(oEvent) {
-							// TODO: edit booking
-							let sBookingId = oItem.sBookingId;
-							let iBookingType = inpBookingType.getValue();
-							let iBookingFrequency = inpBookingFrequency.getValue();
-							let iBookingCategory = inpBookingCategory.getValue();
-							let sBookingTitle = inpBookingTitle.getValue();
-							let fBookingValue = inpBookingValue.getValue();
-							oWebservice.updateBooking("Updating Booking...", sBookingId, iBookingCategory, iBookingType, iBookingFrequency, sBookingTitle, fBookingValue, function(oResponse) {
-								console.log(oResponse);
-								if (oResponse && !oResponse.bError) {
-									sap.m.MessageToast.show("Booking updated successfully.", {});
-								}
-							});
-						}
-					}),
-					new sap.m.Button({
-						text: oBundle.getText("std.cancel"),
-						icon: "sap-icon://sys-cancel-2",
-						press: function(oEvent) {
-							oEditPopup.close();
-							oEditPopup.destroy();
-						}
-					})
-				],
-				content: [
-					new sap.m.FlexBox({
-						height: "100%",
-						width: "100%",
-						direction: sap.m.FlexDirection.Column,
-						items: [
-							// inpBookingType,
-							btnBookingType,
-							inpBookingFrequency,
-							inpBookingCategory,
-							inpBookingTitle,
-							inpBookingValue
-						]
-					})
-				]
-			});
+				let oEditPopup = new sap.m.Dialog({
+					title: "Edit Booking",
+					contentWidth: "20rem", // as wide as shell
+					showHeader: true,
+					resizable: false,
+					draggable: true,
+					stretch: !!sap.ui.Device.system.phone,
+					buttons: [
+						new sap.m.Button({
+							text: oBundle.getText("std.edit"),
+							icon: "sap-icon://save",
+							press: function(oEvent) {
+								// TODO: edit booking
+								let iBookingType = parseInt(btnBookingType.getSelectedKey(), 10);
+								let iBookingFrequency = parseInt(inpBookingFrequency.getValue(), 10);
+								let sBookingDescription = inpBookingDescription.getValue();
+								let fBookingValue = parseFloat(inpBookingValue.getValue());
+								let iBookingId = oItem.iBookingId;
+								let iAccountId = oItem.iAccountId;
+								let sBookingDate = oItem.sBookingDate;
+								let iMainCategoryId = oItem.iMainCategoryId;
+								let iSubCategoryId = oItem.iSubCategoryId;
 
-			oEditPopup.open();
+								oWebservice.setBooking("Saving Booking...", iBookingId, iAccountId, iMainCategoryId, iSubCategoryId, sBookingDate, sBookingDescription, iBookingFrequency, iBookingType, fBookingValue, function(oResponse) {
+									console.log(oResponse);
+									if (oResponse && !oResponse.bError) {
+										// viewUtils.deleteTableItemByKeyAndValue(oView.oBookingTable, "iBookingId", oItem.iBookingId);
+
+										let oTableData = oView.oBookingTable.getModel().getData();
+										let oNewItem = {};
+										oNewItem.sBookingDate = sBookingDate;
+										oNewItem.iMainCategoryId = iMainCategoryId;
+										oNewItem.iSubCategoryId = iSubCategoryId;
+										oNewItem.fBookingValue = fBookingValue;
+										oNewItem.sBookingDescription = sBookingDescription;
+										oNewItem.iBookingFrequency = iBookingFrequency;
+										oNewItem.iBookingType = iBookingType;
+										oNewItem.iAccountId = iAccountId;
+										oNewItem.iBookingId = iBookingId;
+
+										viewUtils.updateTableItemByKeyAndValue(oView.oBookingTable, "iBookingId", oItem.iBookingId, oNewItem);
+
+										//
+										// oTableData.push(oNewItem);
+										//
+										// let oNewData = new sap.ui.model.json.JSONModel();
+										// oNewData.setData(oTableData);
+										// oView.oBookingTable.setModel(oNewData);
+
+										oEditPopup.close();
+
+										sap.m.MessageToast.show("Booking updated successfully.", {});
+									} else {
+										sap.m.MessageToast.show("Booking update failed.", {});
+									}
+								});
+							}
+						}),
+						new sap.m.Button({
+							text: oBundle.getText("std.cancel"),
+							icon: "sap-icon://sys-cancel-2",
+							press: function(oEvent) {
+								oEditPopup.close();
+								oEditPopup.destroy();
+							}
+						})
+					],
+					content: [
+						new sap.m.FlexBox({
+							height: "100%",
+							width: "100%",
+							direction: sap.m.FlexDirection.Column,
+							items: [
+								// inpBookingType,
+								btnBookingType,
+								inpBookingFrequency,
+								inpBookingDescription,
+								inpBookingValue
+							]
+						})
+					]
+				});
+
+				oEditPopup.open();
+			} else {
+				sap.m.MessageToast.show("No booking selected");
+			}
 		},
 
 		getBookingTableColumns: function() {
@@ -284,7 +321,8 @@
 				"sBookingDate",
 				"iBookingType",
 				"iBookingFrequency",
-				"sMainCategory",
+				// "sMainCategory",
+				"iMainCategoryId",
 				"sBookingDescription",
 				"fBookingValue",
 				"iAccountId",
@@ -302,8 +340,11 @@
         },
 
 		getBookingTableTemplate: function() {
+			const oController = this;
+			const oView = oController.getView();
+
 		    let oTemplate = [];
-		    const aKeys = this.getBookingTableColumnKeys();
+		    const aKeys = oController.getBookingTableColumnKeys();
 		    aKeys.forEach(function (sKey) {
 		        switch (sKey) {
                     case "sBookingDate":
@@ -400,6 +441,23 @@
                         );
                         oTemplate.push(oInput);
                         break;
+					case "iMainCategoryId": // TODO: somehow sub category has to be shown in same column
+						oTemplate.push(new sap.m.Text({
+								wrapping: false, // TODO: category => wrapping allowed
+								maxLines: 1,
+								text: {
+									path: sKey,
+									formatter: function(iValue) {
+										for (let i = 0; i < oView.aMainCategories.length; i++) {
+											if (iValue === oView.aMainCategories[i].iMainCategoryId) {
+												return oView.aMainCategories[i].sMainCategoryName;
+											}
+										}
+									}
+								}
+							})
+						);
+						break;
                     default:
                         oTemplate.push(new sap.m.Text({
                                 wrapping: false,        //TODO: category => wrapping allowed

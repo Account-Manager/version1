@@ -49,6 +49,39 @@
         });
 	};
 
+	manager.util.View.prototype.updateTableItemByKeyAndValue = function(oTable, sKey, sKeyValue, oItem) {
+		if (oTable && sKey && sKeyValue && oItem) {
+			let oTableData = oTable.getModel().getData();
+			let iIndexInTable = -1;
+			oTableData.forEach(function(oElement, iIndex) {
+				if (oElement[sKey] === sKeyValue) {
+					iIndexInTable = iIndex;
+					return;
+				}
+			});
+			if (iIndexInTable > -1) {
+				// oTableData.splice(iIndexInTable, 1);
+				oTableData[iIndexInTable] = oItem;
+				let oNewData = new sap.ui.model.json.JSONModel();
+				oNewData.setData(oTableData);
+				oTable.setModel(oNewData);
+			}
+
+			// let sIndexInModel = viewUtil.getIndexInTableModel(oTable);
+			// let oTableModelData = oTable.getModel().getData();
+			// oTableModelData.splice(sIndexInModel, 1);
+			// let oNewTableData = new sap.ui.model.json.JSONModel();
+			// oNewTableData.setData(oTableModelData);
+			// oTable.setModel(oNewTableData);
+		}
+	};
+
+	/**
+	 * removes an item of a table by key and value
+	 * @param oTable
+	 * @param sKey
+	 * @param mValue
+	 */
 	manager.util.View.prototype.deleteTableItemByKeyAndValue = function(oTable, sKey, mValue) {
 		if (oTable && sKey && mValue) {
 			let oTableData = oTable.getModel().getData();
